@@ -67,7 +67,7 @@ export default function SettingsScreen({ userEmail, onBack, onLogout, onTerms })
           <Text style={styles.logoutText}>🚪  Logout</Text>
         </TouchableOpacity>
 
-        <Text style={styles.version}>v1.0.0</Text>
+        <Text style={styles.version}>v2.0</Text>
       </ScrollView>
     </View>
   );

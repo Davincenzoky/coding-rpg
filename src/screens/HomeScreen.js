@@ -39,10 +39,6 @@ export default function HomeScreen({ onStart, onLeaderboard, onSettings, onAchie
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.badgeRow}>
-        <View style={styles.badge}><Text style={styles.badgeText}>v1.0</Text></View>
-      </View>
-
       <Image source={require('../assets/logo.png')} style={styles.logo} resizeMode="contain" />
       <Text style={styles.sub}>A Coding Tower Defense RPG</Text>
       {playerData && <PlayerLevel xp={playerData.xp || 0} size="md" />}
@@ -97,6 +93,10 @@ export default function HomeScreen({ onStart, onLeaderboard, onSettings, onAchie
 
       {userEmail ? <Text style={styles.userInfo}>👤 {userEmail}</Text> : null}
 
+      <View style={styles.badgeRow}>
+        <View style={styles.badge}><Text style={styles.badgeText}>v2.0</Text></View>
+      </View>
+
       <View style={styles.footer}>
         <Text style={styles.footerText}>JavaScript  •  Python  •  HTML/CSS  •  SQL  •  React</Text>
       </View>
@@ -106,7 +106,7 @@ export default function HomeScreen({ onStart, onLeaderboard, onSettings, onAchie
 
 const styles = StyleSheet.create({
   container: { flexGrow: 1, backgroundColor: colors.bg, padding: spacing.lg, alignItems: 'center', justifyContent: 'center', paddingVertical: 40 },
-  badgeRow: { width: '100%', alignItems: 'center', marginBottom: spacing.sm },
+  badgeRow: { width: '100%', alignItems: 'center', marginVertical: spacing.sm },
   badge: { backgroundColor: colors.primary, paddingHorizontal: 10, paddingVertical: 3, borderRadius: 20 },
   badgeText: { color: '#fff', fontSize: font.sizeXs, fontWeight: 'bold', letterSpacing: 1 },
   logo: { width: '100%', maxWidth: 320, height: 100, marginBottom: spacing.xs },
