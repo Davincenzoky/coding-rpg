@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import { colors, spacing, radius, font } from '../theme';
 
 const HERO_LINES = [
@@ -60,7 +60,7 @@ export default function LandingScreen({ onGetStarted }) {
           )}
         </View>
 
-        <Text style={styles.heroTitle}>CodingRPG</Text>
+        <Image source={require('../assets/logo.png')} style={styles.logo} resizeMode="contain" />
         <Text style={styles.heroSub}>A Coding Tower Defense RPG</Text>
         <Text style={styles.heroDesc}>
           Defend your server from bugs by solving code challenges.
@@ -161,13 +161,7 @@ const styles = StyleSheet.create({
   termLineDone: { color: colors.warning, fontSize: font.sizeSm, fontFamily: font.mono, marginBottom: 4, lineHeight: 20 },
   cursor: { color: colors.success, opacity: 0.7 },
   blink: { opacity: 0.5 },
-  heroTitle: {
-    color: colors.text,
-    fontSize: 48,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    letterSpacing: 2,
-  },
+  logo: { width: '100%', maxWidth: 400, height: 100, marginBottom: spacing.sm },
   heroSub: {
     color: colors.accent,
     fontSize: font.sizeLg,
