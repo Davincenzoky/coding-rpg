@@ -1,8 +1,9 @@
 import React, { useRef, useEffect } from 'react';
 import { View, Text, Animated, StyleSheet } from 'react-native';
 import { colors, spacing, radius, font } from '../theme';
+import PlayerLevel from './PlayerLevel';
 
-export default function HUD({ score, lives, wave, totalWaves, enemyCount, towerCount }) {
+export default function HUD({ score, lives, wave, totalWaves, enemyCount, towerCount, xp = 0 }) {
   const shakeAnim = useRef(new Animated.Value(0)).current;
   const prevLivesRef = useRef(lives);
 
@@ -29,6 +30,10 @@ export default function HUD({ score, lives, wave, totalWaves, enemyCount, towerC
       <View style={styles.item}>
         <Text style={styles.label}>WAVE</Text>
         <Text style={styles.value}>{wave}/{totalWaves}</Text>
+      </View>
+      <View style={styles.divider} />
+      <View style={styles.item}>
+        <PlayerLevel xp={xp} size="sm" />
       </View>
       <View style={styles.divider} />
       <View style={styles.item}>

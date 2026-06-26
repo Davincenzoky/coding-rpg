@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { colors, spacing, radius, font } from '../theme';
+import PlayerLevel from '../components/PlayerLevel';
+import { loadPlayerData } from '../data/playerData';
 
 const LINES = [
   { text: '> Initializing defense systems...', color: colors.success },
@@ -16,6 +18,7 @@ const LINES = [
 export default function HomeScreen({ onStart, onLeaderboard, onSettings, onAchievements, userEmail }) {
   const [visible, setVisible] = useState(0);
   const [typing, setTyping] = useState('');
+  const playerData = userEmail ? loadPlayerData(userEmail) : null;
   const [charIdx, setCharIdx] = useState(0);
   const [showBtns, setShowBtns] = useState(false);
 
@@ -42,6 +45,7 @@ export default function HomeScreen({ onStart, onLeaderboard, onSettings, onAchie
 
       <Image source={require('../assets/logo.png')} style={styles.logo} resizeMode="contain" />
       <Text style={styles.sub}>A Coding Tower Defense RPG</Text>
+      {playerData && <PlayerLevel xp={playerData.xp || 0} size="md" />}
 
       <View style={styles.terminal}>
         {LINES.slice(0, visible).map((l, i) => (

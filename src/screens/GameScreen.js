@@ -20,7 +20,9 @@ import { colors, spacing, radius, font } from '../theme';
 import useKeyboard from '../hooks/useKeyboard';
 import useSound from '../hooks/useSound';
 import AchievementPopup from '../components/AchievementPopup';
+import LevelUpPopup from '../components/LevelUpPopup';
 import { ACHIEVEMENTS, loadAchievements, checkAndUnlockAchievements } from '../data/achievements';
+import { awardXp, loadPlayerData } from '../data/playerData';
 
 let tutorialShown = false;
 
@@ -37,6 +39,7 @@ export default function GameScreen({ techStack, level, onBack, levelNum, maxLeve
   const [towerRanges, setTowerRanges] = useState([]);
   const [waveCountdown, setWaveCountdown] = useState(null);
   const [newAchievement, setNewAchievement] = useState(null);
+  const [levelUpData, setLevelUpData] = useState(null);
   const [builtTypes, setBuiltTypes] = useState(new Set());
   const streakRef = useRef(0);
   const totalWinsRef = useRef(0);
@@ -50,6 +53,8 @@ export default function GameScreen({ techStack, level, onBack, levelNum, maxLeve
   const lastTimeRef = useRef(Date.now());
 
   stateRef.current = state;
+
+  const playerXp = userEmail ? (loadPlayerData(userEmail).xp || 0) : 0;
 
   function showMessage(msg, type = 'info') {
     setGameMessage(msg);
@@ -217,6 +222,12 @@ export default function GameScreen({ techStack, level, onBack, levelNum, maxLeve
         };
         const { newUnlock } = checkAndUnlockAchievements(userEmail, earned, achData);
         if (newUnlock) setNewAchievement(newUnlock);
+
+        const xpBase = levelNum * 10;
+        const xpBonus = state.towers.filter(t => t.solved).length * 5 + state.lives * 2;
+        const xpTotal = xpBase + xpBonus;
+        const result = awardXp(userEmail, xpTotal, techStack?.id);
+        if (result.leveledUp) setLevelUpData(result);
       }
     }
   }, [state.victory]);
@@ -420,6 +431,10 @@ export default function GameScreen({ techStack, level, onBack, levelNum, maxLeve
               </Text>
               <Text style={styles.statLabel}>Towers</Text>
             </View>
+            <View style={styles.stat}>
+              <Text style={[styles.statValue, { fontSize: 20 }]}>+{state.score}</Text>
+              <Text style={styles.statLabel}>XP Earned</Text>
+            </View>
           </View>
           <View style={styles.btnGroup}>
             {onNextLevel ? (
@@ -458,6 +473,7 @@ export default function GameScreen({ techStack, level, onBack, levelNum, maxLeve
         totalWaves={state.level.waves.length}
         enemyCount={state.enemies.filter(e => e.alive).length}
         towerCount={state.towers.filter(t => t.solved).length}
+        xp={playerXp}
       />
 
       {gameMessage ? (
@@ -472,6 +488,10 @@ export default function GameScreen({ techStack, level, onBack, levelNum, maxLeve
         >
           <Text style={styles.messageText}>{gameMessage}</Text>
         </Animated.View>
+      ) : null}
+
+      {levelUpData ? (
+        <LevelUpPopup newLevel={levelUpData.newLevel} onDone={() => setLevelUpData(null)} />
       ) : null}
 
       {newAchievement ? (
