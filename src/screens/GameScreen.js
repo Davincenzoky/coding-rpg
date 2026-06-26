@@ -18,10 +18,12 @@ const COUNTDOWN_TICK = 1000;
 import { saveScore } from '../services/leaderboardService';
 import { colors, spacing, radius, font } from '../theme';
 import useKeyboard from '../hooks/useKeyboard';
+import useSound from '../hooks/useSound';
 
 let tutorialShown = false;
 
 export default function GameScreen({ techStack, level, onBack, levelNum, maxLevel, onNextLevel, userEmail }) {
+  const { playTowerFire, playEnemyHit, playEnemyDestroyed, playWrongAnswer, playVictory, playGameOver, playCountdownTick, playCountdownGo, playTowerPlace, playUpgrade } = useSound();
   const [state, setState] = useState(() => createInitialState(level));
   const [projectiles, setProjectiles] = useState([]);
   const [showChallenge, setShowChallenge] = useState(false);
@@ -73,6 +75,7 @@ export default function GameScreen({ techStack, level, onBack, levelNum, maxLeve
       const ticker = setInterval(() => {
         tick--;
         if (tick > 0) {
+          playCountdownTick();
           setCountdownNumber(tick);
           countdownScale.setValue(1.5);
           Animated.spring(countdownScale, {
@@ -81,6 +84,7 @@ export default function GameScreen({ techStack, level, onBack, levelNum, maxLeve
             useNativeDriver: false,
           }).start();
         } else {
+          playCountdownGo();
           setCountdownNumber('GO!');
           countdownScale.setValue(2);
           Animated.spring(countdownScale, {
@@ -135,15 +139,21 @@ export default function GameScreen({ techStack, level, onBack, levelNum, maxLeve
 
             if (dist < speed * dt + 8) {
               const dmg = p.damage || 1;
-              setState((s) => ({
-                ...s,
-                score: s.score + Math.round(dmg * 5),
-                enemies: s.enemies.map((e) =>
-                  e.id === p.targetId
-                    ? { ...e, health: e.health - dmg, alive: e.health - dmg > 0 }
-                    : e
-                ),
-              }));
+              setState((s) => {
+                const target = s.enemies.find(e => e.id === p.targetId);
+                const willDie = target && (target.health - dmg <= 0);
+                if (willDie) playEnemyDestroyed();
+                else playEnemyHit();
+                return {
+                  ...s,
+                  score: s.score + Math.round(dmg * 5),
+                  enemies: s.enemies.map((e) =>
+                    e.id === p.targetId
+                      ? { ...e, health: e.health - dmg, alive: e.health - dmg > 0 }
+                      : e
+                  ),
+                };
+              });
               return { ...p, dead: true };
             }
 
@@ -170,9 +180,16 @@ export default function GameScreen({ techStack, level, onBack, levelNum, maxLeve
 
   useEffect(() => {
     if (state.lives <= 0 && !state.gameOver) {
+      playGameOver();
       setState((prev) => ({ ...prev, gameOver: true }));
     }
   }, [state.lives]);
+
+  useEffect(() => {
+    if (state.victory) {
+      playVictory();
+    }
+  }, [state.victory]);
 
   useEffect(() => {
     if (state.victory && userEmail) {
@@ -200,6 +217,7 @@ export default function GameScreen({ techStack, level, onBack, levelNum, maxLeve
       });
 
       if (target) {
+        playTowerFire(t.type);
         projIdRef.current++;
         setProjectiles((prev) => [
           ...prev,
@@ -264,13 +282,16 @@ export default function GameScreen({ techStack, level, onBack, levelNum, maxLeve
     setCurrentChallenge(null);
     const tower = challengeTower ? stateRef.current.towers[challengeTower.towerIndex] : null;
     if (tower?.solved) {
+      playUpgrade();
       showMessage(`+${reward} pts! Tower upgraded to Lv.${tower.level + 1}!`, 'success');
     } else {
+      playTowerPlace();
       showMessage(`+${reward} pts! Tower activated!`, 'success');
     }
   }
 
   function handleFail() {
+    playWrongAnswer();
     setState((prev) => ({ ...prev, lives: prev.lives - 1 }));
     showMessage('Wrong! -1 Life', 'error');
     setShowChallenge(false);
