@@ -3,6 +3,7 @@ import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView } from 'rea
 import { colors, spacing, radius, font } from '../theme';
 import PlayerLevel from '../components/PlayerLevel';
 import { loadPlayerData } from '../data/playerData';
+import { getVersion } from '../data/version';
 
 function buildLines(userEmail) {
   const name = userEmail ? userEmail.split('@')[0] : 'Coder';
@@ -81,7 +82,7 @@ export default function HomeScreen({ onStart, onLeaderboard, onSettings, onAchie
       {userEmail ? <Text style={styles.userInfo}>👤 {userEmail}</Text> : null}
 
       <View style={styles.badgeRow}>
-        <View style={styles.badge}><Text style={styles.badgeText}>v2.0</Text></View>
+        <View style={styles.badge}><Text style={styles.badgeText}>{getVersion()}</Text></View>
       </View>
 
       <View style={styles.footer}>

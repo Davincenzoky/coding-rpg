@@ -1,5 +1,8 @@
 Set-Location "$PSScriptRoot"
 
+# Bump version before deploy (run `.\bump-version.ps1 -Part major` for major updates)
+# .\bump-version.ps1 -Part patch
+
 # Clean and build
 Remove-Item -Recurse -Force dist -ErrorAction SilentlyContinue
 npx expo export --platform web --output-dir dist

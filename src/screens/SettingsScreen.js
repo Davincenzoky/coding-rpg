@@ -4,6 +4,7 @@ import { logOut } from '../services/authService';
 import { getProfile, updateUsername } from '../services/leaderboardService';
 import Header from '../components/ui/Header';
 import { colors, spacing, radius, font } from '../theme';
+import { getVersion } from '../data/version';
 import { useTheme } from '../contexts/ThemeContext';
 
 export default function SettingsScreen({ userEmail, onBack, onLogout, onTerms }) {
@@ -67,7 +68,7 @@ export default function SettingsScreen({ userEmail, onBack, onLogout, onTerms })
           <Text style={styles.logoutText}>🚪  Logout</Text>
         </TouchableOpacity>
 
-        <Text style={styles.version}>v2.0</Text>
+        <Text style={styles.version}>{getVersion()}</Text>
       </ScrollView>
     </View>
   );
