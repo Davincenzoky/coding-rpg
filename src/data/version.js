@@ -1,4 +1,4 @@
-const VERSION = { major: 2, minor: 0, patch: 0 };
+const VERSION = { major: 3, minor: 0, patch: 0 };;
 
 export function getVersion() {
   return `v${VERSION.major}.${VERSION.minor}.${VERSION.patch}`;
@@ -23,3 +23,4 @@ export function bumpPatch() {
 }
 
 export default VERSION;
+
