@@ -18,7 +18,7 @@ function buildLines() {
   ];
 }
 
-export default function HomeScreen({ onStart, onLeaderboard, onSettings, onAchievements, userEmail }) {
+export default function HomeScreen({ onStart, onLeaderboard, onSettings, onAchievements, userEmail, isGuest }) {
   const LINES = buildLines();
   const [visible, setVisible] = useState(0);
   const [typing, setTyping] = useState('');
@@ -79,7 +79,7 @@ export default function HomeScreen({ onStart, onLeaderboard, onSettings, onAchie
         </View>
       ) : <View style={{ height: 160 }} />}
 
-      {userEmail ? <Text style={styles.userInfo}>👤 {userEmail}</Text> : null}
+      {userEmail ? <Text style={styles.userInfo}>👤 {isGuest ? 'Guest' : userEmail}</Text> : null}
 
       <View style={styles.badgeRow}>
         <View style={styles.badge}><Text style={styles.badgeText}>{getVersion()}</Text></View>

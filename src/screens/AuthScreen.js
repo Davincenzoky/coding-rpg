@@ -1,14 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
 import { signUp, signIn } from '../services/authService';
+import { useAuth } from '../context/AuthContext';
+import { isOnline } from '../services/syncService';
 import { colors, spacing, radius, font } from '../theme';
 
 export default function AuthScreen({ onLogin }) {
+  const { loginAsGuest } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLogin, setIsLogin] = useState(true);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [offline, setOffline] = useState(!isOnline());
+
+  useEffect(() => {
+    function handleOnline() { setOffline(false); }
+    function handleOffline() { setOffline(true); }
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   async function handleSubmit() {
     if (!email || !password) { setError('Please fill in all fields'); return; }
@@ -82,6 +97,11 @@ export default function AuthScreen({ onLogin }) {
             <Text style={styles.switchLink}>{isLogin ? 'Sign Up' : 'Sign In'}</Text>
           </Text>
         </TouchableOpacity>
+        {offline ? (
+          <TouchableOpacity style={styles.offlineBtn} onPress={() => loginAsGuest()}>
+            <Text style={styles.offlineBtnText}>📡 Continue Offline</Text>
+          </TouchableOpacity>
+        ) : null}
       </View>
     </KeyboardAvoidingView>
   );
@@ -120,4 +140,9 @@ const styles = StyleSheet.create({
   switchBtn: { alignItems: 'center', paddingVertical: spacing.xs },
   switchText: { color: colors.textDim, fontSize: font.sizeSm },
   switchLink: { color: colors.accent, fontWeight: 'bold' },
+  offlineBtn: {
+    backgroundColor: 'rgba(255,193,7,0.1)', padding: 14, borderRadius: radius.lg,
+    alignItems: 'center', borderWidth: 1, borderColor: 'rgba(255,193,7,0.3)',
+  },
+  offlineBtnText: { color: colors.warning, fontSize: font.sizeMd, fontWeight: 'bold' },
 });

@@ -34,7 +34,7 @@ class ErrorBoundary extends React.Component {
 }
 
 function AppContent() {
-  const { user, loading } = useAuth();
+  const { user, loading, isGuest } = useAuth();
   const { isDark } = useTheme();
   const [screen, setScreen] = useState(null);
   const [techStack, setTechStack] = useState(null);
@@ -117,6 +117,7 @@ function AppContent() {
             onSettings={() => setScreen('settings')}
             onAchievements={() => setScreen('achievements')}
             userEmail={user?.email}
+            isGuest={isGuest}
           />
         </ResponsiveContainer>
       </View>
@@ -141,6 +142,7 @@ function AppContent() {
         <ResponsiveContainer>
           <SettingsScreen
             userEmail={user?.email}
+            isGuest={isGuest}
             onBack={handleBack}
             onLogout={handleLogout}
             onTerms={() => setScreen('terms')}
@@ -187,16 +189,17 @@ function AppContent() {
     return (
       <View style={styles.container}>
         <StatusBar style={isDark ? 'light' : 'dark'} />
-        <GameScreen
-          key={`${techStack.id}-${currentLevel}`}
-          techStack={techStack}
-          level={levelData}
-          levelNum={currentLevel}
-          maxLevel={techStack.levels}
-          userEmail={user?.email}
-          onBack={handleBack}
-          onNextLevel={currentLevel < techStack.levels ? handleNextLevel : null}
-        />
+          <GameScreen
+            key={`${techStack.id}-${currentLevel}`}
+            techStack={techStack}
+            level={levelData}
+            levelNum={currentLevel}
+            maxLevel={techStack.levels}
+            userEmail={user?.email}
+            isGuest={isGuest}
+            onBack={handleBack}
+            onNextLevel={currentLevel < techStack.levels ? handleNextLevel : null}
+          />
       </View>
     );
   }

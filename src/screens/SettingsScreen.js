@@ -8,7 +8,7 @@ import { colors, spacing, radius, font } from '../theme';
 import { getVersion } from '../data/version';
 import { useTheme } from '../contexts/ThemeContext';
 
-export default function SettingsScreen({ userEmail, onBack, onLogout, onTerms }) {
+export default function SettingsScreen({ userEmail, isGuest, onBack, onLogout, onTerms }) {
   const { isDark, toggleTheme } = useTheme();
   const [username, setUsername] = useState('');
   const [saved, setSaved] = useState('');
@@ -33,23 +33,33 @@ export default function SettingsScreen({ userEmail, onBack, onLogout, onTerms })
       <Header title="SETTINGS" onBack={onBack} />
       <ScrollView style={styles.body}>
         <Text style={styles.section}>PROFILE</Text>
-        <View style={styles.card}>
-          <Text style={styles.label}>Email</Text>
-          <Text style={styles.email}>{userEmail}</Text>
-          <Text style={styles.label}>Display Name</Text>
-          <TextInput
-            style={styles.input}
-            value={username}
-            onChangeText={setUsername}
-            placeholder="Enter username"
-            placeholderTextColor={colors.textMuted}
-            maxLength={20}
-          />
-          <TouchableOpacity style={styles.saveBtn} onPress={handleSave}>
-            <Text style={styles.saveBtnText}>Save</Text>
-          </TouchableOpacity>
-          {saved ? <Text style={styles.saved}>✅ {saved}</Text> : null}
-        </View>
+        {isGuest ? (
+          <View style={styles.card}>
+            <Text style={styles.guestTitle}>👤 Playing as Guest</Text>
+            <Text style={styles.guestText}>Sign up or sign in to save your progress online and appear on the leaderboard.</Text>
+            <TouchableOpacity style={styles.saveBtn} onPress={() => { logOut(); onLogout(); }}>
+              <Text style={styles.saveBtnText}>Sign In / Sign Up</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View style={styles.card}>
+            <Text style={styles.label}>Email</Text>
+            <Text style={styles.email}>{userEmail}</Text>
+            <Text style={styles.label}>Display Name</Text>
+            <TextInput
+              style={styles.input}
+              value={username}
+              onChangeText={setUsername}
+              placeholder="Enter username"
+              placeholderTextColor={colors.textMuted}
+              maxLength={20}
+            />
+            <TouchableOpacity style={styles.saveBtn} onPress={handleSave}>
+              <Text style={styles.saveBtnText}>Save</Text>
+            </TouchableOpacity>
+            {saved ? <Text style={styles.saved}>✅ {saved}</Text> : null}
+          </View>
+        )}
 
         <Text style={styles.section}>INFO</Text>
         <TouchableOpacity style={styles.optionRow} onPress={onTerms}>
@@ -66,9 +76,11 @@ export default function SettingsScreen({ userEmail, onBack, onLogout, onTerms })
         </TouchableOpacity>
 
         <Text style={styles.section}>ACCOUNT</Text>
-        <TouchableOpacity style={styles.logoutBtn} onPress={() => { logOut(); onLogout(); }}>
-          <Text style={styles.logoutText}>🚪  Logout</Text>
-        </TouchableOpacity>
+        {!isGuest ? (
+          <TouchableOpacity style={styles.logoutBtn} onPress={() => { logOut(); onLogout(); }}>
+            <Text style={styles.logoutText}>🚪  Logout</Text>
+          </TouchableOpacity>
+        ) : null}
 
         <Text style={styles.version}>{getVersion()}</Text>
       </ScrollView>
@@ -99,4 +111,6 @@ const styles = StyleSheet.create({
   logoutBtn: { backgroundColor: 'rgba(255,107,107,0.08)', borderRadius: radius.lg, padding: spacing.md, alignItems: 'center', borderWidth: 1, borderColor: 'rgba(255,107,107,0.2)' },
   logoutText: { color: colors.danger, fontSize: font.sizeLg, fontWeight: 'bold' },
   version: { color: colors.textMuted, fontSize: font.sizeXs, textAlign: 'center', marginTop: 30 },
+  guestTitle: { color: colors.text, fontSize: font.sizeLg, fontWeight: 'bold', marginBottom: spacing.sm, textAlign: 'center' },
+  guestText: { color: colors.textDim, fontSize: font.sizeSm, marginBottom: spacing.md, textAlign: 'center', lineHeight: 20 },
 });
