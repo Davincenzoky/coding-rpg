@@ -71,26 +71,6 @@ export default function HomeScreen({ onStart, onLeaderboard, onSettings, onAchie
         </View>
       ) : <View style={{ height: 160 }} />}
 
-      <View style={styles.instructions}>
-        <Text style={styles.instTitle}>HOW TO PLAY</Text>
-        <View style={styles.instRow}>
-          <Text style={styles.instNum}>1</Text>
-          <Text style={styles.instText}>Select your <Text style={styles.hl}>tech stack</Text></Text>
-        </View>
-        <View style={styles.instRow}>
-          <Text style={styles.instNum}>2</Text>
-          <Text style={styles.instText}>Tap <Text style={styles.hl}>+</Text> to place a tower</Text>
-        </View>
-        <View style={styles.instRow}>
-          <Text style={styles.instNum}>3</Text>
-          <Text style={styles.instText}>Solve the <Text style={styles.hl}>code block</Text> challenge</Text>
-        </View>
-        <View style={styles.instRow}>
-          <Text style={styles.instNum}>4</Text>
-          <Text style={styles.instText}>Don't let bugs <Text style={styles.danger}>reach the end</Text>!</Text>
-        </View>
-      </View>
-
       {userEmail ? <Text style={styles.userInfo}>👤 {userEmail}</Text> : null}
 
       <View style={styles.badgeRow}>
@@ -129,20 +109,7 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: colors.border,
   },
   secondaryBtnText: { color: colors.text, fontSize: font.sizeLg, fontWeight: 'bold' },
-  instructions: {
-    backgroundColor: colors.bgCard, padding: spacing.lg, borderRadius: radius.xl,
-    width: '100%', maxWidth: 420, borderWidth: 1, borderColor: colors.border, marginBottom: spacing.md,
-  },
-  instTitle: { color: colors.warning, fontSize: font.sizeSm, fontWeight: 'bold', letterSpacing: 1.5, marginBottom: spacing.md },
-  instRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 10 },
-  instNum: {
-    width: 22, height: 22, borderRadius: 11, backgroundColor: colors.bg,
-    color: colors.textDim, fontSize: font.sizeXs, fontWeight: 'bold', textAlign: 'center', lineHeight: 22,
-    marginRight: spacing.sm, borderWidth: 1, borderColor: colors.border,
-  },
-  instText: { color: colors.textDim, fontSize: font.sizeSm, flex: 1 },
-  hl: { color: colors.success, fontWeight: 'bold' },
-  danger: { color: colors.danger, fontWeight: 'bold' },
+
   userInfo: { color: colors.textMuted, fontSize: font.sizeXs, marginBottom: spacing.sm },
   footer: { padding: spacing.sm },
   footerText: { color: colors.textMuted, fontSize: font.sizeXs, letterSpacing: 0.5 },
