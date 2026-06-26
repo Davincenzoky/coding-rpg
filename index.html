@@ -23,7 +23,16 @@
         flex: 1;
       }
     </style>
-  <link rel="icon" href="/coding-rpg/favicon.png" /></head>
+  <link rel="icon" href="/coding-rpg/favicon.png" /><script>
+document.addEventListener('contextmenu', e => e.preventDefault());
+document.addEventListener('keydown', e => {
+  if (e.key === 'F12' || 
+      (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase())) ||
+      (e.ctrlKey && e.key === 'U')) {
+    e.preventDefault();
+  }
+});
+</script></head>
 
   <body>
     <!-- Use static rendering with Expo Router to support running without JavaScript. -->
