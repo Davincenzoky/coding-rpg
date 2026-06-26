@@ -1,0 +1,16 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Leaderboard collection: Anyone can read, only authenticated users can write.
+    match /leaderboard/{email} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // Chat Messages collection: Anyone can read, anyone can write messages up to 200 characters.
+    match /chat_messages/{messageId} {
+      allow read: if true;
+      allow create: if request.resource.data.text.size() > 0 && request.resource.data.text.size() <= 200;
+    }
+  }
+}
