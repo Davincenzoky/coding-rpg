@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { colors, spacing, radius, font } from '../theme';
 import PlayerLevel from '../components/PlayerLevel';
+import OnlineStatusBar from '../components/OnlineStatusBar';
 import { loadPlayerData } from '../data/playerData';
 import { getVersion } from '../data/version';
 
@@ -41,7 +42,9 @@ export default function HomeScreen({ onStart, onLeaderboard, onSettings, onAchie
   }, [visible, charIdx]);
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <View style={{ flex: 1, backgroundColor: colors.bg }}>
+      <OnlineStatusBar />
+      <ScrollView contentContainerStyle={styles.container}>
       <Image source={require('../assets/logo.png')} style={styles.logo} resizeMode="contain" />
       <Text style={styles.sub}>A Coding Tower Defense RPG</Text>
       {playerData && <PlayerLevel xp={playerData.xp || 0} size="md" />}
@@ -86,11 +89,12 @@ export default function HomeScreen({ onStart, onLeaderboard, onSettings, onAchie
         <Text style={styles.footerText}>JavaScript  •  Python  •  HTML/CSS  •  SQL  •  React</Text>
       </View>
     </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flexGrow: 1, backgroundColor: colors.bg, padding: spacing.lg, alignItems: 'center', justifyContent: 'center', paddingVertical: 40 },
+  container: { flexGrow: 1, padding: spacing.lg, alignItems: 'center', justifyContent: 'center', paddingVertical: 40 },
   badgeRow: { width: '100%', alignItems: 'center', marginVertical: spacing.sm },
   badge: { backgroundColor: colors.primary, paddingHorizontal: 10, paddingVertical: 3, borderRadius: 20 },
   badgeText: { color: '#fff', fontSize: font.sizeXs, fontWeight: 'bold', letterSpacing: 1 },

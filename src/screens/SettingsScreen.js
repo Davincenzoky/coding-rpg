@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 
 import { logOut } from '../services/authService';
 import { getProfile, updateUsername } from '../services/leaderboardService';
 import Header from '../components/ui/Header';
+import OnlineStatusBar from '../components/OnlineStatusBar';
 import { colors, spacing, radius, font } from '../theme';
 import { getVersion } from '../data/version';
 import { useTheme } from '../contexts/ThemeContext';
@@ -28,6 +29,7 @@ export default function SettingsScreen({ userEmail, onBack, onLogout, onTerms })
 
   return (
     <View style={styles.container}>
+      <OnlineStatusBar />
       <Header title="SETTINGS" onBack={onBack} />
       <ScrollView style={styles.body}>
         <Text style={styles.section}>PROFILE</Text>
