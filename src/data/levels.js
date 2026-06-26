@@ -137,6 +137,106 @@ const CHALLENGE_POOLS = {
       { id: 'r_e2', title: "Custom Hook", desc: "Hook naming", code: `function ___() { return useState(0) }`, answer: "useMyHook", choices: ["useMyHook", "myHook", "MyHook", "hookMy", "usehook", "createHook"] },
     ],
   },
+  cpp: {
+    beginner: [
+      { id: 'cpp_b1', title: "Include", desc: "Include iostream", code: `___ <iostream>`, answer: "#include", choices: ["#include", "import", "using", "#define", "#using", "include"] },
+      { id: 'cpp_b2', title: "Namespace", desc: "Standard namespace", code: `___ namespace std;`, answer: "using", choices: ["using", "import", "include", "with", "namespace", "define"] },
+      { id: 'cpp_b3', title: "Main", desc: "Main function", code: `___ main() {`, answer: "int", choices: ["int", "void", "char", "bool", "float", "auto"] },
+      { id: 'cpp_b4', title: "Output", desc: "Print to console", code: `cout ___ "hello";`, answer: "<<", choices: ["<<", ">>", "::", "->", "==", "="] },
+      { id: 'cpp_b5', title: "Newline", desc: "End line", code: `cout << "hi" ___ endl;`, answer: "<<", choices: ["<<", ">>", "::", ";", ",", "."] },
+    ],
+    intermediate: [
+      { id: 'cpp_i1', title: "For Loop", desc: "For loop", code: `for (___ i = 0; i < 5; i++)`, answer: "int", choices: ["int", "auto", "var", "let", "size_t", "char"] },
+      { id: 'cpp_i2', title: "Pointer", desc: "Declare pointer", code: `int ___ ptr = &x;`, answer: "*", choices: ["*", "&", "->", "::", "**", "&&"] },
+      { id: 'cpp_i3', title: "Reference", desc: "Reference variable", code: `int ___ ref = x;`, answer: "&", choices: ["&", "*", "->", "::", "&&", "||"] },
+      { id: 'cpp_i4', title: "Array Size", desc: "Array size", code: `sizeof(arr) ___ sizeof(arr[0])`, answer: "/", choices: ["/", "*", "-", "+", "%", "&"] },
+    ],
+    advanced: [
+      { id: 'cpp_a1', title: "Class", desc: "Define class", code: `___ MyClass {`, answer: "class", choices: ["class", "struct", "union", "interface", "type", "object"] },
+      { id: 'cpp_a2', title: "Public", desc: "Access specifier", code: `___:`, answer: "public", choices: ["public", "private", "protected", "internal", "static", "virtual"] },
+      { id: 'cpp_a3', title: "Virtual", desc: "Virtual function", code: `___ void func() = 0;`, answer: "virtual", choices: ["virtual", "abstract", "override", "static", "extern", "inline"] },
+      { id: 'cpp_a4', title: "Template", desc: "Template syntax", code: `template <___ T>`, answer: "typename", choices: ["typename", "class", "type", "struct", "auto", "decltype"] },
+    ],
+    expert: [
+      { id: 'cpp_e1', title: "Move", desc: "Move semantics", code: `T(T&& other) ___ : data(other.data) {}`, answer: "noexcept", choices: ["noexcept", "explicit", "constexpr", "inline", "virtual", "override"] },
+      { id: 'cpp_e2', title: "Lambda", desc: "Lambda capture", code: `[___](int x) { return x + a; }`, answer: "a", choices: ["a", "&", "=", "this", "&a", "=a"] },
+    ],
+  },
+  go: {
+    beginner: [
+      { id: 'go_b1', title: "Package", desc: "Package declaration", code: `___ main`, answer: "package", choices: ["package", "module", "import", "include", "using", "namespace"] },
+      { id: 'go_b2', title: "Import", desc: "Import fmt", code: `___ "fmt"`, answer: "import", choices: ["import", "include", "using", "require", "load", "from"] },
+      { id: 'go_b3', title: "Function", desc: "Define function", code: `___ main() {`, answer: "func", choices: ["func", "function", "def", "fn", "void", "proc"] },
+      { id: 'go_b4', title: "Print", desc: "Print line", code: `fmt.___("hello")`, answer: "Println", choices: ["Println", "Print", "Sprintf", "Fprintf", "Log", "Write"] },
+      { id: 'go_b5', title: "Variable", desc: "Short variable", code: `x ___ 10`, answer: ":=", choices: [":=", "=", "var", "let", "auto", "def"] },
+    ],
+    intermediate: [
+      { id: 'go_i1', title: "For Loop", desc: "For loop", code: `___ i := 0; i < 5; i++ {`, answer: "for", choices: ["for", "while", "loop", "each", "range", "do"] },
+      { id: 'go_i2', title: "Range", desc: "Range over slice", code: `for i, v ___ range arr {`, answer: ":=", choices: [":=", "=", "in", "of", "->", "with"] },
+      { id: 'go_i3', title: "Array", desc: "Declare array", code: `var arr [5]___`, answer: "int", choices: ["int", "string", "float64", "bool", "byte", "rune"] },
+      { id: 'go_i4', title: "Switch", desc: "Switch case", code: `switch x { ___ 1:`, answer: "case", choices: ["case", "default", "if", "when", "match", "select"] },
+    ],
+    advanced: [
+      { id: 'go_a1', title: "Goroutine", desc: "Start goroutine", code: `___ fn()`, answer: "go", choices: ["go", "spawn", "async", "thread", "fork", "defer"] },
+      { id: 'go_a2', title: "Channel", desc: "Create channel", code: `c := ___ chan int)`, answer: "make(", choices: ["make(", "new(", "chan(", "create(", "buffered(", "sync("] },
+      { id: 'go_a3', title: "Defer", desc: "Defer call", code: `___ fmt.Println("done")`, answer: "defer", choices: ["defer", "go", "await", "finally", "ensure", "delay"] },
+      { id: 'go_a4', title: "Struct", desc: "Define struct", code: `___ Point {`, answer: "type", choices: ["type", "struct", "class", "interface", "type struct", "def"] },
+    ],
+    expert: [
+      { id: 'go_e1', title: "Interface", desc: "Interface definition", code: `type Shape ___ {`, answer: "interface", choices: ["interface", "struct", "type", "impl", "trait", "contract"] },
+      { id: 'go_e2', title: "Error", desc: "Error interface", code: `func (e MyErr) ___() string {`, answer: "Error", choices: ["Error", "String", "Message", "Text", "Code", "What"] },
+    ],
+  },
+  rust: {
+    beginner: [
+      { id: 'rs_b1', title: "Fn", desc: "Define function", code: `___ main() {`, answer: "fn", choices: ["fn", "func", "function", "def", "proc", "lambda"] },
+      { id: 'rs_b2', title: "Print", desc: "Print macro", code: `___!("hello");`, answer: "println", choices: ["println", "print", "format", "log", "echo", "write"] },
+      { id: 'rs_b3', title: "Let", desc: "Immutable variable", code: `___ x = 10;`, answer: "let", choices: ["let", "let mut", "mut", "var", "const", "auto"] },
+      { id: 'rs_b4', title: "Mutable", desc: "Mutable variable", code: `let ___ x = 10;`, answer: "mut", choices: ["mut", "var", "ref", "&", "let", "change"] },
+      { id: 'rs_b5', title: "Return", desc: "Return value", code: `fn add(a:i32) -> i32 { a ___ b }`, answer: "+", choices: ["+", "-", "*", "/", "%", "&"] },
+    ],
+    intermediate: [
+      { id: 'rs_i1', title: "For Loop", desc: "For loop", code: `for i ___ 0..5 {`, answer: "in", choices: ["in", "to", "range", "from", "..", "="] },
+      { id: 'rs_i2', title: "Match", desc: "Match expression", code: `match x { 1 ___ println!("one")`, answer: "=>", choices: ["=>", "->", ":", "=", "==", "::"] },
+      { id: 'rs_i3', title: "Vector", desc: "Create vector", code: `let v = ___![];`, answer: "vec", choices: ["vec", "vector", "list", "array", "collect", "from"] },
+      { id: 'rs_i4', title: "Ownership", desc: "Move ownership", code: `let s2 = ___;`, answer: "s1", choices: ["s1", "&s1", "s1.clone()", "*s1", "mut s1", "ref s1"] },
+    ],
+    advanced: [
+      { id: 'rs_a1', title: "Struct", desc: "Define struct", code: `___ Point { x: i32, y: i32 }`, answer: "struct", choices: ["struct", "type", "class", "interface", "object", "record"] },
+      { id: 'rs_a2', title: "Impl", desc: "Implement method", code: `___ Point { fn area(&self) -> i32 { }`, answer: "impl", choices: ["impl", "type", "for", "trait", "with", "using"] },
+      { id: 'rs_a3', title: "Enum", desc: "Define enum", code: `___ Option<T> {`, answer: "enum", choices: ["enum", "type", "union", "variant", "sum", "tagged"] },
+      { id: 'rs_a4', title: "Result", desc: "Return Result", code: `fn div() -> Result<i32, ___>`, answer: "String", choices: ["String", "Error", "i32", "bool", "Box", "&str"] },
+    ],
+    expert: [
+      { id: 'rs_e1', title: "Trait", desc: "Define trait", code: `___ Display { fn fmt(&self) -> String; }`, answer: "trait", choices: ["trait", "interface", "type", "impl", "contract", "protocol"] },
+      { id: 'rs_e2', title: "Lifetime", desc: "Lifetime annotation", code: `fn longest<___>(x: &str, y: &str) -> &str`, answer: "'a", choices: ["'a", "&a", "<a>", "a", "'static", "&'a"] },
+    ],
+  },
+  ts: {
+    beginner: [
+      { id: 'ts_b1', title: "Type", desc: "Type annotation", code: `let x: ___ = 10;`, answer: "number", choices: ["number", "int", "float", "i32", "num", "Number"] },
+      { id: 'ts_b2', title: "String Type", desc: "String type", code: `let name: ___ = "hello";`, answer: "string", choices: ["string", "str", "text", "String", "char", "&str"] },
+      { id: 'ts_b3', title: "Boolean", desc: "Boolean type", code: `let isAlive: ___ = true;`, answer: "boolean", choices: ["boolean", "bool", "true", "Boolean", "bit", "flag"] },
+      { id: 'ts_b4', title: "Array Type", desc: "Number array", code: `let arr: ___[] = [1,2,3];`, answer: "number", choices: ["number", "int", "float", "any", "object", "Array"] },
+      { id: 'ts_b5', title: "Any", desc: "Any type", code: `let x: ___ = "hello";`, answer: "any", choices: ["any", "unknown", "never", "void", "all", "mixed"] },
+    ],
+    intermediate: [
+      { id: 'ts_i1', title: "Interface", desc: "Define interface", code: `___ User { name: string; }`, answer: "interface", choices: ["interface", "type", "struct", "class", "object", "contract"] },
+      { id: 'ts_i2', title: "Optional", desc: "Optional property", code: `age___: number`, answer: "?", choices: ["?", "!", "??", "|", "&", ":"] },
+      { id: 'ts_i3', title: "Union", desc: "Union type", code: `let id: string ___ number;`, answer: "|", choices: ["|", "&", "??", "||", ":", "!"] },
+      { id: 'ts_i4', title: "Function Type", desc: "Function type", code: `let fn: (x: number) ___ number;`, answer: "=>", choices: ["=>", "->", ":", "=>", "|", "=>"] },
+    ],
+    advanced: [
+      { id: 'ts_a1', title: "Generic", desc: "Generic function", code: `function identity<___>(arg: T): T {`, answer: "T", choices: ["T", "Type", "G", "A", "any", "unknown"] },
+      { id: 'ts_a2', title: "Enum", desc: "Define enum", code: `___ Color { Red, Green, Blue }`, answer: "enum", choices: ["enum", "const", "type", "interface", "let", "var"] },
+      { id: 'ts_a3', title: "Readonly", desc: "Readonly array", code: `let arr: ___<number> = [1,2,3];`, answer: "ReadonlyArray", choices: ["ReadonlyArray", "readonly", "const", "immutable", "Freeze", "Fixed"] },
+      { id: 'ts_a4', title: "Tuple", desc: "Tuple type", code: `let pair: [string, ___];`, answer: "number", choices: ["number", "string", "boolean", "any", "object", "void"] },
+    ],
+    expert: [
+      { id: 'ts_e1', title: "Mapped", desc: "Mapped type", code: `type Optional<T> = { [P ___ keyof T]?: T[P] };`, answer: "in", choices: ["in", "as", "of", "from", ":", "=>"] },
+      { id: 'ts_e2', title: "Conditional", desc: "Conditional type", code: `type IsStr<T> = T ___ string ? "yes" : "no";`, answer: "extends", choices: ["extends", "is", "instanceof", "==", "===", "as"] },
+    ],
+  },
 };
 
 const TOWER_TYPE_KEYS = ['normal', 'ice', 'sniper', 'mgun'];
@@ -220,11 +320,15 @@ export function getTierLabel(levelNum) {
 }
 
 const TECH_STACKS = [
-  { id: 'js', name: 'JavaScript', icon: '🟨', color: '#f7df1e', bgColor: 'rgba(247,223,30,0.1)', levels: TOTAL_LEVELS },
-  { id: 'py', name: 'Python', icon: '🐍', color: '#3572A5', bgColor: 'rgba(53,114,165,0.1)', levels: TOTAL_LEVELS },
-  { id: 'html', name: 'HTML/CSS', icon: '🌐', color: '#e34c26', bgColor: 'rgba(227,76,38,0.1)', levels: TOTAL_LEVELS },
-  { id: 'sql', name: 'SQL', icon: '🗄️', color: '#00618a', bgColor: 'rgba(0,97,138,0.1)', levels: TOTAL_LEVELS },
-  { id: 'react', name: 'React', icon: '⚛️', color: '#61dafb', bgColor: 'rgba(97,218,251,0.1)', levels: TOTAL_LEVELS },
+  { id: 'js', name: 'JavaScript', icon: '🟨', color: '#f7df1e', bgColor: 'rgba(247,223,30,0.1)', levels: TOTAL_LEVELS, unlockRequirement: null },
+  { id: 'py', name: 'Python', icon: '🐍', color: '#3572A5', bgColor: 'rgba(53,114,165,0.1)', levels: TOTAL_LEVELS, unlockRequirement: null },
+  { id: 'html', name: 'HTML/CSS', icon: '🌐', color: '#e34c26', bgColor: 'rgba(227,76,38,0.1)', levels: TOTAL_LEVELS, unlockRequirement: null },
+  { id: 'sql', name: 'SQL', icon: '🗄️', color: '#00618a', bgColor: 'rgba(0,97,138,0.1)', levels: TOTAL_LEVELS, unlockRequirement: null },
+  { id: 'react', name: 'React', icon: '⚛️', color: '#61dafb', bgColor: 'rgba(97,218,251,0.1)', levels: TOTAL_LEVELS, unlockRequirement: null },
+  { id: 'cpp', name: 'C++', icon: '⚙️', color: '#00599C', bgColor: 'rgba(0,89,156,0.1)', levels: TOTAL_LEVELS, unlockRequirement: true },
+  { id: 'go', name: 'Go', icon: '🔷', color: '#00ADD8', bgColor: 'rgba(0,173,216,0.1)', levels: TOTAL_LEVELS, unlockRequirement: true },
+  { id: 'rust', name: 'Rust', icon: '🦀', color: '#DEA584', bgColor: 'rgba(222,165,132,0.1)', levels: TOTAL_LEVELS, unlockRequirement: true },
+  { id: 'ts', name: 'TypeScript', icon: '🔷', color: '#3178C6', bgColor: 'rgba(49,120,198,0.1)', levels: TOTAL_LEVELS, unlockRequirement: true },
 ];
 
 export default TECH_STACKS;

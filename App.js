@@ -177,7 +177,7 @@ function AppContent() {
       <View style={styles.container}>
         <StatusBar style={isDark ? 'light' : 'dark'} />
         <ResponsiveContainer>
-          <TechStackScreen onSelect={handleTechSelect} onBack={handleBack} />
+          <TechStackScreen onSelect={handleTechSelect} onBack={handleBack} userEmail={user?.email} />
         </ResponsiveContainer>
       </View>
     );

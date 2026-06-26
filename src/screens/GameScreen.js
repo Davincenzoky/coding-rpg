@@ -22,7 +22,7 @@ import useSound from '../hooks/useSound';
 import AchievementPopup from '../components/AchievementPopup';
 import LevelUpPopup from '../components/LevelUpPopup';
 import { ACHIEVEMENTS, loadAchievements, checkAndUnlockAchievements } from '../data/achievements';
-import { awardXp, loadPlayerData } from '../data/playerData';
+import { awardXp, loadPlayerData, markStackCompleted } from '../data/playerData';
 
 let tutorialShown = false;
 
@@ -228,6 +228,10 @@ export default function GameScreen({ techStack, level, onBack, levelNum, maxLeve
         const xpTotal = xpBase + xpBonus;
         const result = awardXp(userEmail, xpTotal, techStack?.id);
         if (result.leveledUp) setLevelUpData(result);
+
+        if (levelNum >= 100 && techStack?.id) {
+          markStackCompleted(userEmail, techStack.id);
+        }
       }
     }
   }, [state.victory]);

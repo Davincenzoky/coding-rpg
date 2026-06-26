@@ -40,6 +40,23 @@ export function savePlayerData(email, data) {
   } catch (e) {}
 }
 
+export function markStackCompleted(email, techStackId) {
+  const data = loadPlayerData(email);
+  const completed = data.completedStacks || [];
+  if (completed.includes(techStackId)) return data;
+  completed.push(techStackId);
+  data.completedStacks = completed;
+  savePlayerData(email, data);
+  return data;
+}
+
+export function isStackUnlocked(stack, email) {
+  if (!stack.unlockRequirement) return true;
+  const data = loadPlayerData(email);
+  const completed = data.completedStacks || [];
+  return completed.length >= 1;
+}
+
 export function awardXp(email, amount, techStackId) {
   const data = loadPlayerData(email);
   const prevLevel = getLevel(data.xp);
