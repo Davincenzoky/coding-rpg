@@ -3,7 +3,7 @@ import { View, Text, Image, TextInput, TouchableOpacity, StyleSheet, KeyboardAvo
 import { signUp, signIn } from '../services/authService';
 import { colors, spacing, radius, font } from '../theme';
 
-export default function AuthScreen() {
+export default function AuthScreen({ onLogin }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLogin, setIsLogin] = useState(true);
@@ -17,6 +17,8 @@ export default function AuthScreen() {
     try {
       if (isLogin) await signIn(email, password);
       else await signUp(email, password);
+      onLogin && onLogin();
+      return;
     } catch (e) {
       const msg = e.message
         .replace(/^Firebase:\s*/i, '')

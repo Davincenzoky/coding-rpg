@@ -100,7 +100,7 @@ function AppContent() {
       <View style={styles.container}>
         <StatusBar style={isDark ? 'light' : 'dark'} />
         <ResponsiveContainer>
-          <AuthScreen />
+          <AuthScreen onLogin={() => setScreen('home')} />
         </ResponsiveContainer>
       </View>
     );
