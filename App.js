@@ -12,6 +12,7 @@ import LeaderboardScreen from './src/screens/LeaderboardScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
 import TermsScreen from './src/screens/TermsScreen';
 import AchievementsScreen from './src/screens/AchievementsScreen';
+import LandingScreen from './src/screens/LandingScreen';
 import GameScreen from './src/screens/GameScreen';
 import { generateLevel } from './src/data/levels';
 
@@ -40,10 +41,10 @@ function AppContent() {
   const [currentLevel, setCurrentLevel] = useState(1);
 
   useEffect(() => {
-    if (!loading) {
-      setScreen(user ? 'home' : 'auth');
+    if (!loading && !screen) {
+      setScreen('landing');
     }
-  }, [user, loading]);
+  }, [user, loading, screen]);
 
   function handlePlay() { setScreen('techSelect'); }
 
@@ -55,6 +56,7 @@ function AppContent() {
 
   function handleBack() {
     if (screen === 'game') setScreen('techSelect');
+    else if (screen === 'auth') setScreen('landing');
     else if (screen === 'leaderboard' || screen === 'techSelect' || screen === 'settings' || screen === 'terms' || screen === 'achievements')
       setScreen('home');
     else setScreen('home');
@@ -79,6 +81,15 @@ function AppContent() {
     return (
       <View style={styles.container}>
         <ActivityIndicator size="large" color={colors.primary} style={{ marginTop: 100 }} />
+      </View>
+    );
+  }
+
+  if (screen === 'landing') {
+    return (
+      <View style={styles.container}>
+        <StatusBar style={isDark ? 'light' : 'dark'} />
+        <LandingScreen onGetStarted={() => setScreen(user ? 'home' : 'auth')} />
       </View>
     );
   }
