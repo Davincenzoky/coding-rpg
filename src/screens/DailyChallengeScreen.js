@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Animated } from 'react-native';
 import { colors, spacing, radius, font } from '../theme';
 import { getDailyLevel, getDailyLabel, markPlayedToday } from '../data/dailyChallenge';
@@ -24,7 +24,8 @@ const COUNTDOWN_TICK = 1000;
 
 export default function DailyChallengeScreen({ userEmail, onBack }) {
   const { playTowerFire, playEnemyHit, playEnemyDestroyed, playWrongAnswer, playVictory, playGameOver, playCountdownTick, playCountdownGo, playTowerPlace, playUpgrade } = useSound();
-  const { techStack, level, levelNum } = getDailyLevel();
+  const dailyData = useMemo(() => getDailyLevel(), []);
+  const { techStack, level, levelNum } = dailyData;
   const dateLabel = getDailyLabel();
   const [state, setState] = useState(() => createInitialState(level));
   const [projectiles, setProjectiles] = useState([]);
