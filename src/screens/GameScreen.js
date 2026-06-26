@@ -21,6 +21,7 @@ import useKeyboard from '../hooks/useKeyboard';
 import useSound from '../hooks/useSound';
 import AchievementPopup from '../components/AchievementPopup';
 import LevelUpPopup from '../components/LevelUpPopup';
+import ChatWidget from '../components/ChatWidget';
 import { ACHIEVEMENTS, loadAchievements, checkAndUnlockAchievements } from '../data/achievements';
 import { awardXp, loadPlayerData, markStackCompleted } from '../data/playerData';
 
@@ -502,41 +503,43 @@ export default function GameScreen({ techStack, level, onBack, levelNum, maxLeve
         <AchievementPopup achievement={newAchievement} onDone={() => setNewAchievement(null)} />
       ) : null}
 
-      {waveCountdown ? (
-        <View style={styles.countdownOverlay}>
-          <View style={styles.countdownBox}>
-            <Animated.Text
-              style={[
-                styles.countdownNum,
-                { transform: [{ scale: countdownScale }] },
-                countdownNumber === 'GO!' && styles.goText,
-              ]}
-            >
-              {countdownNumber}
-            </Animated.Text>
-            <Text style={styles.countdownLabel}>
-              {countdownNumber === 'GO!' ? 'Defend the server!' : (() => {
-                const wc = level.waves[waveCountdown - 1];
-                return `Wave ${waveCountdown} - ${wc?.enemiesPerWave || '?'} bugs`;
-              })()}
-            </Text>
-            <View style={styles.countdownBarOuter}>
-              <Animated.View
+{waveCountdown ? (
+          <View style={styles.countdownOverlay}>
+            <View style={styles.countdownBox}>
+              <Animated.Text
                 style={[
-                  styles.countdownBarInner,
-                  {
-                    width: barAnim.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: ['0%', '100%'],
-                    }),
-                  },
+                  styles.countdownNum,
+                  { transform: [{ scale: countdownScale }] },
+                  countdownNumber === 'GO!' && styles.goText,
                 ]}
-              />
+              >
+                {countdownNumber}
+              </Animated.Text>
+              <Text style={styles.countdownLabel}>
+                {countdownNumber === 'GO!' ? 'Defend the server!' : (() => {
+                  const wc = level.waves[waveCountdown - 1];
+                  return `Wave ${waveCountdown} - ${wc?.enemiesPerWave || '?'} bugs`;
+                })()}
+              </Text>
+              <View style={styles.countdownBarOuter}>
+                <Animated.View
+                  style={[
+                    styles.countdownBarInner,
+                    {
+                      width: barAnim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: ['0%', '100%'],
+                      }),
+                    },
+                  ]}
+                />
+              </View>
+              <Text style={styles.countdownTip}>Place your towers while waiting</Text>
             </View>
-            <Text style={styles.countdownTip}>Place your towers while waiting</Text>
           </View>
-        </View>
-      ) : null}
+        ) : null}
+
+        <ChatWidget />
 
       {!state.waveInProgress && state.wave === 0 && !showChallenge ? (
         <View style={styles.helpBar}>

@@ -55,6 +55,7 @@ Read the exact versioned docs at https://docs.expo.dev/versions/v56.0.0/ before 
 - `src/components/Tutorial.js` - Tutorial with steps for all current features
 - `src/components/Confetti.js` - Victory confetti animation
 - `src/components/AnimatedNumber.js` - Eased count-up animation
+- `src/components/ChatWidget.js` - Real-time chat for player global conversation
 - `src/hooks/useKeyboard.js` - Keyboard shortcut hook
 - `src/services/firebase.js` - Firebase config with real API keys
 - `src/services/leaderboardService.js` - Score save/leaderboard query
