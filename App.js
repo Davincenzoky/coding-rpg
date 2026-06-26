@@ -41,9 +41,10 @@ function AppContent() {
   const [currentLevel, setCurrentLevel] = useState(1);
 
   useEffect(() => {
-    if (!loading && !screen) {
-      setScreen('landing');
-    }
+    if (loading) return;
+    if (user && screen === 'auth') { setScreen('home'); return; }
+    if (!user && screen === 'home') { setScreen('auth'); return; }
+    if (!screen) { setScreen('landing'); }
   }, [user, loading, screen]);
 
   function handlePlay() { setScreen('techSelect'); }

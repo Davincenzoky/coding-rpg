@@ -18,7 +18,11 @@ export default function AuthScreen() {
       if (isLogin) await signIn(email, password);
       else await signUp(email, password);
     } catch (e) {
-      setError(e.message.replace('Firebase: ', '').replace(/\(.*\)/, '').trim());
+      const msg = e.message
+        .replace(/^Firebase:\s*/i, '')
+        .replace(/\s*\(.*\)\s*$/, '')
+        .trim();
+      setError(msg || 'Authentication failed');
     }
     setLoading(false);
   }
