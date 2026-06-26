@@ -5,15 +5,12 @@ import PlayerLevel from '../components/PlayerLevel';
 import { loadPlayerData } from '../data/playerData';
 import { getVersion } from '../data/version';
 
-function buildLines(userEmail) {
-  const name = userEmail ? userEmail.split('@')[0] : 'Coder';
+function buildLines() {
   return [
     { text: '> Initializing defense systems...', color: colors.success },
     { text: '> Loading code challenges...', color: colors.success },
     { text: '> WARNING: Bugs detected in the system!', color: colors.danger },
     { text: '' },
-    { text: `> Welcome ${name} to the world of coding!`, color: colors.accent },
-    { text: '> Mission: Write code to build towers', color: colors.accent },
     { text: '> Defend the server from incoming bugs!', color: colors.accent },
     { text: '' },
     { text: '> Ready to deploy? (Y/n)', color: colors.warning },
@@ -21,7 +18,7 @@ function buildLines(userEmail) {
 }
 
 export default function HomeScreen({ onStart, onLeaderboard, onSettings, onAchievements, userEmail }) {
-  const LINES = buildLines(userEmail);
+  const LINES = buildLines();
   const [visible, setVisible] = useState(0);
   const [typing, setTyping] = useState('');
   const playerData = userEmail ? loadPlayerData(userEmail) : null;
@@ -32,14 +29,14 @@ export default function HomeScreen({ onStart, onLeaderboard, onSettings, onAchie
     if (visible >= LINES.length) { setShowBtns(true); return; }
     const line = LINES[visible];
     if (!line.text) {
-      const t = setTimeout(() => { setVisible(v => v + 1); setCharIdx(0); setTyping(''); }, 150);
+      const t = setTimeout(() => { setVisible(v => v + 1); setCharIdx(0); setTyping(''); }, 60);
       return () => clearTimeout(t);
     }
     if (charIdx < line.text.length) {
-      const t = setTimeout(() => { setTyping(line.text.slice(0, charIdx + 1)); setCharIdx(i => i + 1); }, 25);
+      const t = setTimeout(() => { setTyping(line.text.slice(0, charIdx + 1)); setCharIdx(i => i + 1); }, 10);
       return () => clearTimeout(t);
     }
-    const t = setTimeout(() => { setVisible(v => v + 1); setCharIdx(0); setTyping(''); }, 400);
+    const t = setTimeout(() => { setVisible(v => v + 1); setCharIdx(0); setTyping(''); }, 150);
     return () => clearTimeout(t);
   }, [visible, charIdx]);
 
