@@ -21,10 +21,8 @@ $html = $html -replace '</style>', @'
   body { margin: 0; font-family: inherit; }
   button, input, textarea { font-family: inherit; }
   * { box-sizing: border-box; }
-  ::-webkit-scrollbar { width: 6px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: rgba(233,69,96,0.3); border-radius: 3px; }
-  ::-webkit-scrollbar-thumb:hover { background: rgba(233,69,96,0.5); }
+  ::-webkit-scrollbar { display: none; }
+  * { scrollbar-width: none; -ms-overflow-style: none; }
   @media (hover: hover) {
     a, button, [role="button"] { cursor: pointer; }
   }

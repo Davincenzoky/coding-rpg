@@ -59,12 +59,14 @@ export default function HomeScreen({ onStart, onLeaderboard, onSettings, onAchie
           <TouchableOpacity style={styles.primaryBtn} onPress={onStart} activeOpacity={0.85}>
             <Text style={styles.primaryBtnText}>▶  PLAY</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.secondaryBtn} onPress={onLeaderboard}>
-            <Text style={styles.secondaryBtnText}>🏆  Leaderboard</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.secondaryBtn} onPress={onAchievements}>
-            <Text style={styles.secondaryBtnText}>🏅  Achievements</Text>
-          </TouchableOpacity>
+          <View style={styles.rowBtns}>
+            <TouchableOpacity style={[styles.secondaryBtn, styles.halfBtn]} onPress={onLeaderboard}>
+              <Text style={styles.secondaryBtnText}>🏆  Leaderboard</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.secondaryBtn, styles.halfBtn]} onPress={onAchievements}>
+              <Text style={styles.secondaryBtnText}>🏅  Achievements</Text>
+            </TouchableOpacity>
+          </View>
           <TouchableOpacity style={styles.secondaryBtn} onPress={onSettings}>
             <Text style={styles.secondaryBtnText}>⚙️  Settings</Text>
           </TouchableOpacity>
@@ -108,6 +110,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.bgCard, padding: 14, borderRadius: radius.lg, alignItems: 'center',
     borderWidth: 1, borderColor: colors.border,
   },
+  rowBtns: { flexDirection: 'row', gap: 10 },
+  halfBtn: { flex: 1 },
   secondaryBtnText: { color: colors.text, fontSize: font.sizeLg, fontWeight: 'bold' },
 
   userInfo: { color: colors.textMuted, fontSize: font.sizeXs, marginBottom: spacing.sm },
