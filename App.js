@@ -13,8 +13,6 @@ import SettingsScreen from './src/screens/SettingsScreen';
 import TermsScreen from './src/screens/TermsScreen';
 import AchievementsScreen from './src/screens/AchievementsScreen';
 import LandingScreen from './src/screens/LandingScreen';
-import DailyChallengeScreen from './src/screens/DailyChallengeScreen';
-import DailyLeaderboardScreen from './src/screens/DailyLeaderboardScreen';
 import GameScreen from './src/screens/GameScreen';
 import { generateLevel } from './src/data/levels';
 
@@ -58,7 +56,7 @@ function AppContent() {
   }
 
   function handleBack() {
-    if (screen === 'game' || screen === 'dailyChallenge') setScreen('techSelect');
+    if (screen === 'game') setScreen('techSelect');
     else if (screen === 'auth') setScreen('landing');
     else if (screen === 'leaderboard' || screen === 'techSelect' || screen === 'settings' || screen === 'terms' || screen === 'achievements' || screen === 'dailyLeaderboard')
       setScreen('home');
@@ -118,8 +116,6 @@ function AppContent() {
             onLeaderboard={() => setScreen('leaderboard')}
             onSettings={() => setScreen('settings')}
             onAchievements={() => setScreen('achievements')}
-            onDailyChallenge={() => setScreen('dailyChallenge')}
-            onDailyLeaderboard={() => setScreen('dailyLeaderboard')}
             userEmail={user?.email}
           />
         </ResponsiveContainer>
@@ -182,26 +178,6 @@ function AppContent() {
         <StatusBar style={isDark ? 'light' : 'dark'} />
         <ResponsiveContainer>
           <TechStackScreen onSelect={handleTechSelect} onBack={handleBack} userEmail={user?.email} />
-        </ResponsiveContainer>
-      </View>
-    );
-  }
-
-  if (screen === 'dailyChallenge') {
-    return (
-      <View style={styles.container}>
-        <StatusBar style={isDark ? 'light' : 'dark'} />
-        <DailyChallengeScreen userEmail={user?.email} onBack={() => setScreen('home')} />
-      </View>
-    );
-  }
-
-  if (screen === 'dailyLeaderboard') {
-    return (
-      <View style={styles.container}>
-        <StatusBar style={isDark ? 'light' : 'dark'} />
-        <ResponsiveContainer>
-          <DailyLeaderboardScreen onBack={() => setScreen('home')} />
         </ResponsiveContainer>
       </View>
     );
