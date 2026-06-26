@@ -21,7 +21,6 @@ import useKeyboard from '../hooks/useKeyboard';
 import useSound from '../hooks/useSound';
 import AchievementPopup from '../components/AchievementPopup';
 import LevelUpPopup from '../components/LevelUpPopup';
-import ChatWidget from '../components/ChatWidget';
 import { ACHIEVEMENTS, loadAchievements, checkAndUnlockAchievements } from '../data/achievements';
 import { awardXp, loadPlayerData, markStackCompleted } from '../data/playerData';
 
@@ -538,8 +537,6 @@ export default function GameScreen({ techStack, level, onBack, levelNum, maxLeve
             </View>
           </View>
         ) : null}
-
-        <ChatWidget />
 
       {!state.waveInProgress && state.wave === 0 && !showChallenge ? (
         <View style={styles.helpBar}>

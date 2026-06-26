@@ -3,12 +3,41 @@ import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet, Keyboard
 import { colors, spacing, radius, font } from '../theme';
 import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp, limit } from 'firebase/firestore';
 import { db } from '../services/firebase';
+import { getProfile } from '../services/leaderboardService';
 
-export default function ChatWidget() {
+const sessionGuestId = 'Guest_' + Math.random().toString(36).substr(2, 9);
+
+export default function ChatWidget({ userEmail, isGuest, inlineTrigger = false }) {
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState('');
-  const [isMinimized, setIsMinimized] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(true);
+  const [username, setUsername] = useState('Guest');
   const flatListRef = useRef(null);
+
+  const currentUserId = userEmail || sessionGuestId;
+
+  useEffect(() => {
+    if (isGuest || !userEmail) {
+      setUsername('Guest');
+      return;
+    }
+
+    let isMounted = true;
+    (async () => {
+      const p = await getProfile(userEmail);
+      if (isMounted) {
+        if (p?.username) {
+          setUsername(p.username);
+        } else {
+          setUsername(userEmail.split('@')[0]);
+        }
+      }
+    })();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [userEmail, isGuest]);
 
   useEffect(() => {
     const messagesRef = collection(db, 'chat_messages');
@@ -35,8 +64,8 @@ export default function ChatWidget() {
       await addDoc(collection(db, 'chat_messages'), {
         text: inputText.trim(),
         timestamp: serverTimestamp(),
-        user: 'Guest',
-        userId: Math.random().toString(36).substr(2, 9),
+        user: username,
+        userId: currentUserId,
       });
       setInputText('');
     } catch (error) {
@@ -51,7 +80,7 @@ export default function ChatWidget() {
   };
 
   const renderMessage = ({ item }) => {
-    const isCurrentUser = item.user === 'Guest' && item.userId === Math.random().toString(36).substr(2, 9);
+    const isCurrentUser = item.userId === currentUserId;
     
     return (
       <View style={[styles.messageContainer, isCurrentUser ? styles.currentUserMessage : styles.otherUserMessage]}>
@@ -63,6 +92,13 @@ export default function ChatWidget() {
   };
 
   if (isMinimized) {
+    if (inlineTrigger) {
+      return (
+        <TouchableOpacity style={styles.inlineTriggerButton} onPress={() => setIsMinimized(false)}>
+          <Text style={styles.inlineTriggerText}>💬 Chat ({messages.length})</Text>
+        </TouchableOpacity>
+      );
+    }
     return (
       <TouchableOpacity style={styles.minimizedContainer} onPress={() => setIsMinimized(false)}>
         <Text style={styles.minimizedText}>💬 {messages.length > 0 ? messages.length : 0} Messages</Text>
@@ -148,6 +184,22 @@ const styles = StyleSheet.create({
   minimizedText: {
     color: colors.text,
     fontSize: font.sizeSm,
+    fontWeight: 'bold',
+  },
+  inlineTriggerButton: {
+    backgroundColor: colors.bgCard,
+    borderRadius: radius.md,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 6,
+    borderWidth: 1,
+    borderColor: colors.border,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: spacing.sm,
+  },
+  inlineTriggerText: {
+    color: colors.text,
+    fontSize: font.sizeXs,
     fontWeight: 'bold',
   },
   header: {

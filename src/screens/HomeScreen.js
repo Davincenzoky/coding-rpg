@@ -3,6 +3,7 @@ import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView } from 'rea
 import { colors, spacing, radius, font } from '../theme';
 import PlayerLevel from '../components/PlayerLevel';
 import OnlineStatusBar from '../components/OnlineStatusBar';
+import ChatWidget from '../components/ChatWidget';
 import { loadPlayerData } from '../data/playerData';
 import { getVersion } from '../data/version';
 
@@ -79,7 +80,12 @@ export default function HomeScreen({ onStart, onLeaderboard, onSettings, onAchie
         </View>
       ) : <View style={{ height: 160 }} />}
 
-      {userEmail ? <Text style={styles.userInfo}>👤 {isGuest ? 'Guest' : userEmail}</Text> : null}
+      {(userEmail || isGuest) ? (
+        <View style={styles.profileRow}>
+          <Text style={styles.userInfo}>👤 {isGuest ? 'Guest' : userEmail}</Text>
+          <ChatWidget userEmail={userEmail} isGuest={isGuest} inlineTrigger={true} />
+        </View>
+      ) : null}
 
       <View style={styles.badgeRow}>
         <View style={styles.badge}><Text style={styles.badgeText}>{getVersion()}</Text></View>
@@ -121,7 +127,13 @@ const styles = StyleSheet.create({
   halfBtn: { flex: 1 },
   secondaryBtnText: { color: colors.text, fontSize: font.sizeLg, fontWeight: 'bold' },
 
-  userInfo: { color: colors.textMuted, fontSize: font.sizeXs, marginBottom: spacing.sm },
+  profileRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.sm,
+  },
+  userInfo: { color: colors.textMuted, fontSize: font.sizeXs },
   footer: { padding: spacing.sm },
   footerText: { color: colors.textMuted, fontSize: font.sizeXs, letterSpacing: 0.5 },
 });
