@@ -4,18 +4,23 @@ import { colors, spacing, radius, font } from '../theme';
 import PlayerLevel from '../components/PlayerLevel';
 import { loadPlayerData } from '../data/playerData';
 
-const LINES = [
-  { text: '> Initializing defense systems...', color: colors.success },
-  { text: '> Loading code challenges...', color: colors.success },
-  { text: '> WARNING: Bugs detected in the system!', color: colors.danger },
-  { text: '' },
-  { text: '> Mission: Write code to build towers', color: colors.accent },
-  { text: '> Defend the server from incoming bugs!', color: colors.accent },
-  { text: '' },
-  { text: '> Ready to deploy? (Y/n)', color: colors.warning },
-];
+function buildLines(userEmail) {
+  const name = userEmail ? userEmail.split('@')[0] : 'Coder';
+  return [
+    { text: '> Initializing defense systems...', color: colors.success },
+    { text: '> Loading code challenges...', color: colors.success },
+    { text: '> WARNING: Bugs detected in the system!', color: colors.danger },
+    { text: '' },
+    { text: `> Welcome ${name} to the world of coding!`, color: colors.accent },
+    { text: '> Mission: Write code to build towers', color: colors.accent },
+    { text: '> Defend the server from incoming bugs!', color: colors.accent },
+    { text: '' },
+    { text: '> Ready to deploy? (Y/n)', color: colors.warning },
+  ];
+}
 
 export default function HomeScreen({ onStart, onLeaderboard, onSettings, onAchievements, userEmail }) {
+  const LINES = buildLines(userEmail);
   const [visible, setVisible] = useState(0);
   const [typing, setTyping] = useState('');
   const playerData = userEmail ? loadPlayerData(userEmail) : null;
