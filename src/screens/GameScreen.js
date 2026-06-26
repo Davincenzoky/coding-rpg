@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Animated } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, Animated } from 'react-native';
 import HUD from '../components/HUD';
 import GameBoard from '../components/GameBoard';
 import CodeChallenge from '../components/CodeChallenge';
 import Tutorial from '../components/Tutorial';
+import Confetti from '../components/Confetti';
+import AnimatedNumber from '../components/AnimatedNumber';
 import {
   createInitialState, updateGame, startWave,
   getDistance, getCellCenter, CELL_SIZE,
+  TOWER_TYPES,
 } from '../utils/gameEngine';
 
 const WAVE_DELAY = 5000;
@@ -14,6 +17,9 @@ const COUNTDOWN_TICK = 1000;
 
 import { saveScore } from '../services/leaderboardService';
 import { colors, spacing, radius, font } from '../theme';
+import useKeyboard from '../hooks/useKeyboard';
+
+let tutorialShown = false;
 
 export default function GameScreen({ techStack, level, onBack, levelNum, maxLevel, onNextLevel, userEmail }) {
   const [state, setState] = useState(() => createInitialState(level));
@@ -23,7 +29,7 @@ export default function GameScreen({ techStack, level, onBack, levelNum, maxLeve
   const [challengeTower, setChallengeTower] = useState(null);
   const [gameMessage, setGameMessage] = useState('');
   const [messageType, setMessageType] = useState('info');
-  const [showTutorial, setShowTutorial] = useState(true);
+  const [showTutorial, setShowTutorial] = useState(!tutorialShown);
   const [towerRanges, setTowerRanges] = useState([]);
   const [waveCountdown, setWaveCountdown] = useState(null);
   const [countdownNumber, setCountdownNumber] = useState(null);
@@ -128,12 +134,13 @@ export default function GameScreen({ techStack, level, onBack, levelNum, maxLeve
             const speed = 250;
 
             if (dist < speed * dt + 8) {
+              const dmg = p.damage || 1;
               setState((s) => ({
                 ...s,
-                score: s.score + 10,
+                score: s.score + Math.round(dmg * 5),
                 enemies: s.enemies.map((e) =>
                   e.id === p.targetId
-                    ? { ...e, health: e.health - 1, alive: e.health - 1 > 0 }
+                    ? { ...e, health: e.health - dmg, alive: e.health - dmg > 0 }
                     : e
                 ),
               }));
@@ -178,14 +185,18 @@ export default function GameScreen({ techStack, level, onBack, levelNum, maxLeve
     const { towers, enemies } = currentState;
     const newTowers = towers.map((t) => {
       if (!t.solved) return t;
+      const tType = TOWER_TYPES[t.type] || TOWER_TYPES.normal;
       const cooldown = t.cooldown || 0;
       if (cooldown > 0) return { ...t, cooldown: cooldown - 0.016 };
 
       const center = getCellCenter(t.x, t.y);
+      const range = t.range + (t.level - 1) * 0.3;
+      const damage = t.damage + (t.level - 1) * 0.5;
+
       const target = enemies.find((e) => {
         if (!e.alive) return false;
         const dist = getDistance(center.x, center.y, e.x, e.y);
-        return dist < t.range * CELL_SIZE;
+        return dist < range * CELL_SIZE;
       });
 
       if (target) {
@@ -197,9 +208,11 @@ export default function GameScreen({ techStack, level, onBack, levelNum, maxLeve
             x: center.x,
             y: center.y,
             targetId: target.id,
+            damage,
+            towerType: t.type,
           },
         ]);
-        return { ...t, cooldown: 0.3 };
+        return { ...t, cooldown: tType.cooldown };
       }
       return t;
     });
@@ -209,7 +222,13 @@ export default function GameScreen({ techStack, level, onBack, levelNum, maxLeve
   function handleTowerPress(spot, tower) {
     if (showChallenge) return;
     if (tower && tower.solved) {
-      setTowerRanges(towerRanges.length ? [] : [{ x: spot.x, y: spot.y }]);
+      if (towerRanges.length) {
+        setTowerRanges([]);
+      } else {
+        const tType = TOWER_TYPES[tower.type] || TOWER_TYPES.normal;
+        showMessage(`${tType.label} Lv.${tower.level} | ${tower.solves} solves`, 'info');
+        setTowerRanges([{ x: spot.x, y: spot.y }]);
+      }
       return;
     }
     const challenge = level.challenges.find(
@@ -222,14 +241,33 @@ export default function GameScreen({ techStack, level, onBack, levelNum, maxLeve
 
   function handleSolve(reward) {
     setState((prev) => {
-      const newTowers = prev.towers.map((t, i) =>
-        i === challengeTower.towerIndex ? { ...t, solved: true, cooldown: 0 } : t
-      );
+      const newTowers = prev.towers.map((t, i) => {
+        if (i !== challengeTower.towerIndex) return t;
+        const wasSolved = t.solved;
+        const newLevel = wasSolved ? Math.min(t.level + 1, 5) : t.level;
+        const newSolves = wasSolved ? (t.solves || 0) + 1 : (t.solves || 0);
+        const newDamage = t.damage + 0.5;
+        const newRange = t.range + 0.3;
+        return {
+          ...t,
+          solved: true,
+          cooldown: 0,
+          level: newLevel,
+          solves: newSolves,
+          damage: newDamage,
+          range: newRange,
+        };
+      });
       return { ...prev, towers: newTowers, score: prev.score + reward };
     });
     setShowChallenge(false);
     setCurrentChallenge(null);
-    showMessage(`+${reward} pts! Tower activated!`, 'success');
+    const tower = challengeTower ? stateRef.current.towers[challengeTower.towerIndex] : null;
+    if (tower?.solved) {
+      showMessage(`+${reward} pts! Tower upgraded to Lv.${tower.level + 1}!`, 'success');
+    } else {
+      showMessage(`+${reward} pts! Tower activated!`, 'success');
+    }
   }
 
   function handleFail() {
@@ -258,20 +296,29 @@ export default function GameScreen({ techStack, level, onBack, levelNum, maxLeve
     onNextLevel && onNextLevel();
   }
 
+  useKeyboard([
+    { key: 'Escape', fn: () => { onBack(); return false; } },
+    { key: 'Enter', fn: () => {
+      if (state.gameOver) { handleRetry(); return false; }
+      if (state.victory) { handleNextLevel(); return false; }
+    }},
+  ]);
+
   if (showTutorial) {
-    return <Tutorial onComplete={() => setShowTutorial(false)} />;
+    return <Tutorial onComplete={() => { tutorialShown = true; setShowTutorial(false); }} />;
   }
 
   if (state.gameOver) {
     return (
       <View style={styles.overlayScreen}>
         <View style={styles.resultCard}>
+          <Image source={require('../assets/logo.png')} style={styles.resultLogo} resizeMode="contain" />
           <Text style={styles.gameOverEmoji}>💀</Text>
           <Text style={styles.gameOverText}>GAME OVER</Text>
           <Text style={styles.resultSub}>The bugs took over!</Text>
           <View style={styles.statsRow}>
             <View style={styles.stat}>
-              <Text style={styles.statValue}>{state.score}</Text>
+              <AnimatedNumber value={state.score} duration={1200} style={styles.statValue} />
               <Text style={styles.statLabel}>Score</Text>
             </View>
             <View style={styles.stat}>
@@ -299,13 +346,15 @@ export default function GameScreen({ techStack, level, onBack, levelNum, maxLeve
   if (state.victory) {
     return (
       <View style={styles.overlayScreen}>
+        <Confetti />
         <View style={styles.resultCard}>
+          <Image source={require('../assets/logo.png')} style={styles.resultLogo} resizeMode="contain" />
           <Text style={styles.victoryEmoji}>🏆</Text>
           <Text style={styles.victoryText}>VICTORY!</Text>
           <Text style={styles.resultSub}>Level Complete!</Text>
           <View style={styles.statsRow}>
             <View style={styles.stat}>
-              <Text style={styles.statValue}>{state.score}</Text>
+              <AnimatedNumber value={state.score} duration={1200} style={styles.statValue} />
               <Text style={styles.statLabel}>Score</Text>
             </View>
             <View style={styles.stat}>
@@ -354,6 +403,8 @@ export default function GameScreen({ techStack, level, onBack, levelNum, maxLeve
         lives={state.lives}
         wave={state.wave}
         totalWaves={state.level.waves.length}
+        enemyCount={state.enemies.filter(e => e.alive).length}
+        towerCount={state.towers.filter(t => t.solved).length}
       />
 
       {gameMessage ? (
@@ -384,7 +435,8 @@ export default function GameScreen({ techStack, level, onBack, levelNum, maxLeve
             </Animated.Text>
             <Text style={styles.countdownLabel}>
               {countdownNumber === 'GO!' ? 'Defend the server!' : (() => {
-                return `Level ${levelNum} - ${level.tier}`;
+                const wc = level.waves[waveCountdown - 1];
+                return `Wave ${waveCountdown} - ${wc?.enemiesPerWave || '?'} bugs`;
               })()}
             </Text>
             <View style={styles.countdownBarOuter}>
@@ -455,6 +507,7 @@ const styles = StyleSheet.create({
     borderWidth: 2, borderColor: colors.primary,
     elevation: 12, boxShadow: `0 8px 32px ${colors.primaryGlow}`,
   },
+  resultLogo: { width: 180, height: 50, marginBottom: spacing.sm },
   gameOverEmoji: { fontSize: 64, marginBottom: spacing.sm },
   victoryEmoji: { fontSize: 64, marginBottom: spacing.sm },
   gameOverText: { color: colors.primary, fontSize: 40, fontWeight: 'bold' },

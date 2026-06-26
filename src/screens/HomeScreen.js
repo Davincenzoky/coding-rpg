@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { colors, spacing, radius, font } from '../theme';
 
 const LINES = [
@@ -40,7 +40,7 @@ export default function HomeScreen({ onStart, onLeaderboard, onSettings, userEma
         <View style={styles.badge}><Text style={styles.badgeText}>v1.0</Text></View>
       </View>
 
-      <Text style={styles.title}>CODE DEFENSE</Text>
+      <Image source={require('../assets/logo.png')} style={styles.logo} resizeMode="contain" />
       <Text style={styles.sub}>A Coding Tower Defense RPG</Text>
 
       <View style={styles.terminal}>
@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
   badgeRow: { width: '100%', alignItems: 'center', marginBottom: spacing.sm },
   badge: { backgroundColor: colors.primary, paddingHorizontal: 10, paddingVertical: 3, borderRadius: 20 },
   badgeText: { color: '#fff', fontSize: font.sizeXs, fontWeight: 'bold', letterSpacing: 1 },
-  title: { color: colors.primary, fontSize: 40, fontWeight: 'bold', letterSpacing: 4, textShadow: `0 0 30px ${colors.primaryGlow}` },
+  logo: { width: '100%', maxWidth: 320, height: 100, marginBottom: spacing.xs },
   sub: { color: colors.accent, fontSize: font.sizeSm, marginBottom: spacing.lg, marginTop: 4, letterSpacing: 1 },
   terminal: {
     backgroundColor: '#08081a', padding: spacing.md, borderRadius: radius.lg,

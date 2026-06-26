@@ -1,0 +1,53 @@
+[debug] [2026-06-26T03:34:44.958Z] ----------------------------------------------------------------------
+[debug] [2026-06-26T03:34:44.961Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\vbadu\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy --only hosting
+[debug] [2026-06-26T03:34:44.961Z] CLI Version:   13.33.0
+[debug] [2026-06-26T03:34:44.961Z] Platform:      win32
+[debug] [2026-06-26T03:34:44.961Z] Node Version:  v22.23.1
+[debug] [2026-06-26T03:34:44.962Z] Time:          Fri Jun 26 2026 11:34:44 GMT+0800 (Philippine Standard Time)
+[debug] [2026-06-26T03:34:44.962Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-06-26T03:34:45.124Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-06-26T03:34:45.124Z] > authorizing via signed-in user (baduav20@gmail.com)
+[debug] [2026-06-26T03:34:45.124Z] [iam] checking project code-defense-a32fd for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2026-06-26T03:34:45.126Z] Checked if tokens are valid: false, expires at: 1741583781457
+[debug] [2026-06-26T03:34:45.126Z] Checked if tokens are valid: false, expires at: 1741583781457
+[debug] [2026-06-26T03:34:45.126Z] > refreshing access token with scopes: []
+[debug] [2026-06-26T03:34:45.127Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2026-06-26T03:34:45.127Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-06-26T03:34:45.308Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 400
+[debug] [2026-06-26T03:34:45.308Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-06-26T03:34:45.309Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/code-defense-a32fd:testIamPermissions [none]
+[debug] [2026-06-26T03:34:45.309Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/code-defense-a32fd:testIamPermissions x-goog-quota-user=projects/code-defense-a32fd
+[debug] [2026-06-26T03:34:45.309Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/code-defense-a32fd:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2026-06-26T03:34:46.272Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/code-defense-a32fd:testIamPermissions 401
+[debug] [2026-06-26T03:34:46.272Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/code-defense-a32fd:testIamPermissions {"error":{"code":401,"message":"Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.","status":"UNAUTHENTICATED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"ACCESS_TOKEN_TYPE_UNSUPPORTED","metadata":{"service":"cloudresourcemanager.googleapis.com","method":"google.cloudresourcemanager.v1.Projects.TestIamPermissions"}}]}}
+[debug] [2026-06-26T03:34:46.272Z] Got a 401 Unauthenticated error for a call that required authentication. Refreshing tokens.
+[debug] [2026-06-26T03:34:46.272Z] Checked if tokens are valid: false, expires at: 1741583781457
+[debug] [2026-06-26T03:34:46.272Z] Checked if tokens are valid: false, expires at: 1741583781457
+[debug] [2026-06-26T03:34:46.272Z] > refreshing access token with scopes: []
+[debug] [2026-06-26T03:34:46.272Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2026-06-26T03:34:46.272Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-06-26T03:34:46.340Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 400
+[debug] [2026-06-26T03:34:46.340Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-06-26T03:34:46.341Z] [iam] error while checking permissions, command may fail: Request to https://cloudresourcemanager.googleapis.com/v1/projects/code-defense-a32fd:testIamPermissions had HTTP Error: 401, Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.
+[debug] [2026-06-26T03:34:46.341Z] Checked if tokens are valid: false, expires at: 1741583781457
+[debug] [2026-06-26T03:34:46.341Z] Checked if tokens are valid: false, expires at: 1741583781457
+[debug] [2026-06-26T03:34:46.341Z] > refreshing access token with scopes: []
+[debug] [2026-06-26T03:34:46.341Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2026-06-26T03:34:46.341Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-06-26T03:34:46.418Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 400
+[debug] [2026-06-26T03:34:46.418Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-06-26T03:34:46.418Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/code-defense-a32fd [none]
+[debug] [2026-06-26T03:34:46.553Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/code-defense-a32fd 401
+[debug] [2026-06-26T03:34:46.553Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/code-defense-a32fd {"error":{"code":401,"message":"Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.","status":"UNAUTHENTICATED"}}
+[debug] [2026-06-26T03:34:46.553Z] Got a 401 Unauthenticated error for a call that required authentication. Refreshing tokens.
+[debug] [2026-06-26T03:34:46.553Z] Checked if tokens are valid: false, expires at: 1741583781457
+[debug] [2026-06-26T03:34:46.553Z] Checked if tokens are valid: false, expires at: 1741583781457
+[debug] [2026-06-26T03:34:46.553Z] > refreshing access token with scopes: []
+[debug] [2026-06-26T03:34:46.553Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2026-06-26T03:34:46.553Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-06-26T03:34:46.618Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 400
+[debug] [2026-06-26T03:34:46.618Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-06-26T03:34:46.618Z] Request to https://firebase.googleapis.com/v1beta1/projects/code-defense-a32fd had HTTP Error: 401, Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.
+[error] 
+[error] Error: Assertion failed: resolving hosting target of a site with no site name or target name. This should have caused an error earlier

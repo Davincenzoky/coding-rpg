@@ -1,10 +1,20 @@
 import React, { useRef, useEffect } from 'react';
-import { View, Animated, StyleSheet } from 'react-native';
+import { View, Text, Animated, StyleSheet } from 'react-native';
 import { colors } from '../theme';
+import { TOWER_TYPES } from '../utils/gameEngine';
 
-export default function AnimatedTower({ solved, onPress }) {
+const TYPE_STYLES = {
+  normal: { bg: '#1b5e20', border: '#4caf50', inner: '#2e7d32', arm: '#66bb6a', head: '#81c784' },
+  ice:    { bg: '#0d47a1', border: '#4fc3f7', inner: '#1565c0', arm: '#4fc3f7', head: '#81d4fa' },
+  sniper: { bg: '#4a148c', border: '#ff6b6b', inner: '#6a1b9a', arm: '#ff6b6b', head: '#ff8a80' },
+  mgun:   { bg: '#e65100', border: '#ffd93d', inner: '#ef6c00', arm: '#ffd93d', head: '#ffe082' },
+};
+
+export default function AnimatedTower({ solved, onPress, scale = 1, towerType = 'normal', level = 1 }) {
   const spinAnim = useRef(new Animated.Value(0)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
+  const tStyle = (TYPE_STYLES[towerType] || TYPE_STYLES.normal);
+  const tInfo = TOWER_TYPES[towerType] || TOWER_TYPES.normal;
 
   useEffect(() => {
     if (!solved) return;
@@ -53,14 +63,19 @@ export default function AnimatedTower({ solved, onPress }) {
     >
       {solved ? (
         <>
-          <View style={styles.base}>
-            <View style={styles.baseInner} />
+          <View style={[styles.base, { backgroundColor: tStyle.bg, borderColor: tStyle.border }]}>
+            <View style={[styles.baseInner, { backgroundColor: tStyle.inner }]}>
+              <Text style={[styles.towerEmoji, { fontSize: 14 * scale }]}>{tInfo.emoji}</Text>
+            </View>
           </View>
           <Animated.View style={[styles.dish, { transform: [{ rotate }] }]}>
-            <View style={styles.dishArm} />
-            <View style={styles.dishHead} />
+            <View style={[styles.dishArm, { backgroundColor: tStyle.arm }]} />
+            <View style={[styles.dishHead, { backgroundColor: tStyle.head }]} />
           </Animated.View>
-          <View style={styles.light} />
+          <View style={[styles.light, { backgroundColor: tStyle.border }]} />
+          <View style={styles.levelBadgeSm}>
+            <Text style={[styles.levelBadgeText, { fontSize: 8 * scale }]}>{level}</Text>
+          </View>
         </>
       ) : (
         <>
@@ -159,4 +174,19 @@ const styles = StyleSheet.create({
     borderRadius: 2,
     position: 'absolute',
   },
+  towerEmoji: { textAlign: 'center' },
+  levelBadgeSm: {
+    position: 'absolute',
+    bottom: -2,
+    right: -2,
+    backgroundColor: colors.bgCard,
+    borderRadius: 8,
+    width: 14,
+    height: 14,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: colors.primary,
+  },
+  levelBadgeText: { color: colors.primary, fontWeight: 'bold' },
 });

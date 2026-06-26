@@ -139,11 +139,13 @@ const CHALLENGE_POOLS = {
   },
 };
 
+const TOWER_TYPE_KEYS = ['normal', 'ice', 'sniper', 'mgun'];
+
 const DIFFICULTY_TIERS = [
-  { name: 'BEGINNER', maxLevel: 25, key: 'beginner', hpMin: 1, hpMax: 1, speedMin: 0.8, speedMax: 1.2, enemiesMin: 2, enemiesMax: 3, towerMin: 4, towerMax: 8 },
-  { name: 'INTERMEDIATE', maxLevel: 50, key: 'intermediate', hpMin: 1, hpMax: 2, speedMin: 1.0, speedMax: 1.5, enemiesMin: 3, enemiesMax: 5, towerMin: 4, towerMax: 7 },
-  { name: 'ADVANCED', maxLevel: 75, key: 'advanced', hpMin: 4, hpMax: 7, speedMin: 1.2, speedMax: 1.8, enemiesMin: 7, enemiesMax: 10, towerMin: 2, towerMax: 4 },
-  { name: 'EXPERT', maxLevel: 100, key: 'expert', hpMin: 8, hpMax: 15, speedMin: 1.5, speedMax: 2.5, enemiesMin: 8, enemiesMax: 10, towerMin: 2, towerMax: 3 },
+  { name: 'BEGINNER', maxLevel: 25, key: 'beginner', hpMin: 1, hpMax: 1, speedMin: 0.8, speedMax: 1.2, enemiesMin: 2, enemiesMax: 3, towerMin: 4, towerMax: 8, waves: 1 },
+  { name: 'INTERMEDIATE', maxLevel: 50, key: 'intermediate', hpMin: 1, hpMax: 2, speedMin: 1.0, speedMax: 1.5, enemiesMin: 3, enemiesMax: 5, towerMin: 4, towerMax: 7, waves: 2 },
+  { name: 'ADVANCED', maxLevel: 75, key: 'advanced', hpMin: 4, hpMax: 7, speedMin: 1.2, speedMax: 1.8, enemiesMin: 7, enemiesMax: 10, towerMin: 2, towerMax: 4, waves: 3 },
+  { name: 'EXPERT', maxLevel: 100, key: 'expert', hpMin: 8, hpMax: 15, speedMin: 1.5, speedMax: 2.5, enemiesMin: 8, enemiesMax: 10, towerMin: 2, towerMax: 3, waves: 4 },
 ];
 
 function getTier(levelNum) {
@@ -157,34 +159,59 @@ function lerp(min, max, t) {
   return min + (max - min) * Math.min(t, 1);
 }
 
+const ENEMY_TYPE_POOLS = {
+  beginner: ['normal'],
+  intermediate: ['normal', 'fast'],
+  advanced: ['normal', 'fast', 'tanky'],
+  expert: ['normal', 'fast', 'tanky', 'boss'],
+};
+
 export function generateLevel(techStack, levelNum) {
   const tier = getTier(levelNum);
   const tierProgress = (levelNum - (tier.maxLevel - 25)) / 25;
-  const pool = CHALLENGE_POOLS[techStack.id]?.[tier.key] || [];
-  const challenge = pool[levelNum % pool.length] || pool[0];
+  let pool = CHALLENGE_POOLS[techStack.id]?.[tier.key];
+  if (!pool || !pool.length) {
+    const fallback = Object.values(CHALLENGE_POOLS[techStack.id] || {}).find(p => p?.length);
+    pool = fallback || [{ id: 'fallback', title: 'Code', desc: 'Fill in the blank', code: '___', answer: 'a', choices: ['a', 'b', 'c', 'd', 'e', 'f'] }];
+  }
+  const shuffledPool = [...pool].sort(() => Math.random() - 0.5);
 
   const pathIdx = levelNum % PATHS.length;
 
   const spotCount = Math.round(lerp(tier.towerMin, tier.towerMax, tierProgress));
   const shuffled = [...TOWER_POOL].sort(() => Math.random() - 0.5);
-  const towerSpots = shuffled.slice(0, spotCount);
+  const towerSpots = shuffled.slice(0, spotCount).map(spot => ({
+    ...spot,
+    towerType: TOWER_TYPE_KEYS[Math.floor(Math.random() * TOWER_TYPE_KEYS.length)],
+  }));
 
-  const hp = Math.round(lerp(tier.hpMin, tier.hpMax, tierProgress));
-  const speed = lerp(tier.speedMin, tier.speedMax, tierProgress);
-  const enemyCount = Math.round(lerp(tier.enemiesMin, tier.enemiesMax, tierProgress));
+  const waveCount = tier.waves || 1;
+  const waves = Array.from({ length: waveCount }, (_, w) => {
+    const waveProgress = (w + 1) / waveCount;
+    const hp = Math.round(lerp(tier.hpMin, tier.hpMax, tierProgress) * (1 + waveProgress * 0.5));
+    const speed = lerp(tier.speedMin, tier.speedMax, tierProgress) * (1 + waveProgress * 0.1);
+    const enemyCount = Math.round(lerp(tier.enemiesMin, tier.enemiesMax, tierProgress) * (1 + waveProgress * 0.3));
+    const availableTypes = ENEMY_TYPE_POOLS[tier.key] || ['normal'];
+    const enemyTypes = w === waveCount - 1 && availableTypes.length > 1
+      ? [availableTypes[availableTypes.length - 1], ...availableTypes]
+      : availableTypes;
+    return { enemyHealth: hp, enemySpeed: speed, enemiesPerWave: enemyCount, enemyTypes };
+  });
+
+  const levelChallenges = Array.from({ length: spotCount }, (_, i) => ({
+    ...shuffledPool[i % shuffledPool.length],
+    reward: 50 + levelNum * 5,
+  }));
 
   return {
     id: levelNum,
     name: `Level ${levelNum}`,
     description: `${tier.name} - ${techStack.name}`,
     tier: tier.name,
-    waves: [{ enemyHealth: hp, enemySpeed: speed, enemiesPerWave: enemyCount }],
+    waves,
     path: PATHS[pathIdx],
     towerSpots,
-    challenges: [{
-      ...challenge,
-      reward: 50 + levelNum * 5,
-    }],
+    challenges: levelChallenges,
   };
 }
 

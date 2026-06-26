@@ -1,5 +1,19 @@
 const CELL_SIZE = 50;
 
+export const TOWER_TYPES = {
+  normal: { label: 'Basic', range: 3, damage: 1, cooldown: 0.3, color: '#4caf50', emoji: '🛡️' },
+  ice:    { label: 'Ice',   range: 2.5, damage: 0.5, cooldown: 0.5, color: '#4fc3f7', emoji: '❄️', slowFactor: 0.5, slowDuration: 1.5 },
+  sniper: { label: 'Sniper', range: 5, damage: 3, cooldown: 1.0, color: '#ff6b6b', emoji: '🎯' },
+  mgun:   { label: 'MG',    range: 2, damage: 0.5, cooldown: 0.08, color: '#ffd93d', emoji: '⚡' },
+};
+
+export const ENEMY_TYPES = {
+  normal: { label: 'Bug', speedMult: 1, hpMult: 1, bodyColor: '#c62828', size: 1 },
+  fast:   { label: 'Fast Bug', speedMult: 2, hpMult: 0.5, bodyColor: '#e65100', size: 0.8 },
+  tanky:  { label: 'Tank Bug', speedMult: 0.5, hpMult: 3, bodyColor: '#4a148c', size: 1.4 },
+  boss:   { label: 'BOSS', speedMult: 1.2, hpMult: 6, bodyColor: '#1a237e', size: 1.8 },
+};
+
 function getWaveConfig(level, waveIndex) {
   return level.waves[waveIndex] || level.waves[level.waves.length - 1];
 }
@@ -12,8 +26,12 @@ export function createInitialState(level) {
     y: spot.y,
     challenge: level.challenges[i] || level.challenges[level.challenges.length - 1],
     solved: false,
+    type: spot.towerType || 'normal',
+    level: 1,
+    solves: 0,
     cooldown: 0,
     range: 3,
+    damage: 1,
   }));
   return {
     level,
@@ -65,15 +83,22 @@ export function updateGame(state, dt) {
 
   newState.spawnTimer += dt;
   if (newState.spawnTimer > 1.0 && newState.pathIndex < waveConfig.enemiesPerWave) {
+    const enemyTypes = waveConfig.enemyTypes || ['normal'];
+    const type = enemyTypes[Math.floor(Math.random() * enemyTypes.length)] || 'normal';
+    const eType = ENEMY_TYPES[type] || ENEMY_TYPES.normal;
+    const baseHp = waveConfig.enemyHealth || 1;
+    const baseSpeed = (waveConfig.enemySpeed || 1) * 30;
     enemies.push({
       id: Date.now() + Math.random(),
       pathIndex: 0,
       x: newState.level.path[0].x * CELL_SIZE,
       y: newState.level.path[0].y * CELL_SIZE,
-      health: waveConfig.enemyHealth,
-      maxHealth: waveConfig.enemyHealth,
-      speed: waveConfig.enemySpeed * 30,
+      health: Math.round(baseHp * eType.hpMult),
+      maxHealth: Math.round(baseHp * eType.hpMult),
+      speed: baseSpeed * eType.speedMult,
       alive: true,
+      type,
+      slowTimer: 0,
     });
     newState.spawnTimer = 0;
     newState.pathIndex++;
@@ -98,16 +123,39 @@ export function updateGame(state, dt) {
       let dy = targetY - enemy.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
 
-      if (dist < enemy.speed * dt) {
-        return { ...enemy, x: targetX, y: targetY, pathIndex: nextIdx };
+      let speed = enemy.speed;
+      if (enemy.slowTimer > 0) {
+        speed *= 0.5;
+        enemy.slowTimer -= dt;
       }
-      const vx = (dx / dist) * enemy.speed * dt;
-      const vy = (dy / dist) * enemy.speed * dt;
-      return { ...enemy, x: enemy.x + vx, y: enemy.y + vy };
+
+      if (dist < speed * dt) {
+        return { ...enemy, x: targetX, y: targetY, pathIndex: nextIdx, slowTimer: Math.max(0, enemy.slowTimer - dt) };
+      }
+      const vx = (dx / dist) * speed * dt;
+      const vy = (dy / dist) * speed * dt;
+      return { ...enemy, x: enemy.x + vx, y: enemy.y + vy, slowTimer: Math.max(0, enemy.slowTimer - dt) };
     })
     .filter((e) => e.alive);
 
   newState.enemies = enemies;
+
+  // Process tower slow/freeze effects
+  newState.towers.forEach(t => {
+    if (!t.solved) return;
+    const tType = TOWER_TYPES[t.type] || TOWER_TYPES.normal;
+    if (tType.slowFactor && tType.slowDuration) {
+      const center = getCellCenter(t.x, t.y);
+      newState.enemies.forEach(e => {
+        if (!e.alive) return;
+        const dist = getDistance(center.x, center.y, e.x, e.y);
+        if (dist < tType.range * CELL_SIZE) {
+          e.slowTimer = tType.slowDuration;
+        }
+      });
+    }
+  });
+
   return newState;
 }
 

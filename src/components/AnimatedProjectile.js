@@ -2,8 +2,16 @@ import React, { useRef, useEffect } from 'react';
 import { View, Animated, StyleSheet } from 'react-native';
 import { colors } from '../theme';
 
-export default function AnimatedProjectile({ projectile }) {
+const PROJ_COLORS = {
+  normal: '#4caf50',
+  ice:    '#4fc3f7',
+  sniper: '#ff6b6b',
+  mgun:   '#ffd93d',
+};
+
+export default function AnimatedProjectile({ projectile, scale = 1 }) {
   const glowAnim = useRef(new Animated.Value(0)).current;
+  const projColor = PROJ_COLORS[projectile.towerType] || PROJ_COLORS.normal;
 
   useEffect(() => {
     const glow = Animated.loop(
@@ -39,8 +47,8 @@ export default function AnimatedProjectile({ projectile }) {
       style={[
         styles.wrapper,
         {
-          left: projectile.x - 8,
-          top: projectile.y - 8,
+          left: projectile.x * scale - 8 * scale,
+          top: projectile.y * scale - 8 * scale,
           opacity: glowOpacity,
           transform: [{ scale: glowAnim.interpolate({
             inputRange: [0, 1],
@@ -49,7 +57,7 @@ export default function AnimatedProjectile({ projectile }) {
         },
       ]}
     >
-      <View style={styles.core} />
+      <View style={[styles.core, { backgroundColor: projColor }]} />
       <Animated.View
         style={[
           styles.glow,
@@ -60,6 +68,7 @@ export default function AnimatedProjectile({ projectile }) {
               inputRange: [6, 12],
               outputRange: [3, 6],
             }),
+            backgroundColor: projColor,
           },
         ]}
       />

@@ -1,10 +1,26 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useRef, useEffect } from 'react';
+import { View, Text, Animated, StyleSheet } from 'react-native';
 import { colors, spacing, radius, font } from '../theme';
 
-export default function HUD({ score, lives, wave, totalWaves }) {
+export default function HUD({ score, lives, wave, totalWaves, enemyCount, towerCount }) {
+  const shakeAnim = useRef(new Animated.Value(0)).current;
+  const prevLivesRef = useRef(lives);
+
+  useEffect(() => {
+    if (lives < prevLivesRef.current) {
+      Animated.sequence([
+        Animated.timing(shakeAnim, { toValue: -6, duration: 40, useNativeDriver: false }),
+        Animated.timing(shakeAnim, { toValue: 6, duration: 40, useNativeDriver: false }),
+        Animated.timing(shakeAnim, { toValue: -4, duration: 30, useNativeDriver: false }),
+        Animated.timing(shakeAnim, { toValue: 4, duration: 30, useNativeDriver: false }),
+        Animated.timing(shakeAnim, { toValue: 0, duration: 20, useNativeDriver: false }),
+      ]).start();
+    }
+    prevLivesRef.current = lives;
+  }, [lives]);
+
   return (
-    <View style={styles.container}>
+    <Animated.View style={[styles.container, { transform: [{ translateX: shakeAnim }] }]}>
       <View style={styles.item}>
         <Text style={styles.label}>SCORE</Text>
         <Text style={styles.value}>{score}</Text>
@@ -16,10 +32,15 @@ export default function HUD({ score, lives, wave, totalWaves }) {
       </View>
       <View style={styles.divider} />
       <View style={styles.item}>
+        <Text style={styles.label}>ENEMIES</Text>
+        <Text style={styles.value}>{enemyCount}</Text>
+      </View>
+      <View style={styles.divider} />
+      <View style={styles.item}>
         <Text style={styles.label}>LIVES</Text>
         <Text style={[styles.value, styles.livesText]}>{'❤️'.repeat(Math.max(0, lives))}</Text>
       </View>
-    </View>
+    </Animated.View>
   );
 }
 

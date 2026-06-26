@@ -1,39 +1,43 @@
 export const colors = {
-  bg: '#0a0a1a',
-  bgCard: '#12122a',
-  bgCard2: '#1a1a35',
-  bgDark: '#060612',
-  border: '#2a2a50',
-  borderLight: '#3a3a6a',
-  primary: '#e94560',
-  primaryGlow: 'rgba(233,69,96,0.3)',
-  accent: '#4fc3f7',
-  success: '#4caf50',
-  warning: '#ffd93d',
-  danger: '#ff6b6b',
-  text: '#e8e8f0',
-  textDim: '#8888aa',
-  textMuted: '#555577',
-  gold: '#ffd93d',
-  silver: '#c0c0c0',
-  bronze: '#cd7f32',
+  bg: 'var(--color-bg)',
+  bgCard: 'var(--color-bgCard)',
+  bgCard2: 'var(--color-bgCard2)',
+  bgDark: 'var(--color-bgDark)',
+  border: 'var(--color-border)',
+  borderLight: 'var(--color-borderLight)',
+  primary: 'var(--color-primary)',
+  primaryGlow: 'var(--color-primaryGlow)',
+  accent: 'var(--color-accent)',
+  success: 'var(--color-success)',
+  warning: 'var(--color-warning)',
+  danger: 'var(--color-danger)',
+  text: 'var(--color-text)',
+  textDim: 'var(--color-textDim)',
+  textMuted: 'var(--color-textMuted)',
+  gold: 'var(--color-gold)',
+  silver: 'var(--color-silver)',
+  bronze: 'var(--color-bronze)',
 };
 
 export const spacing = {
-  xs: 4, sm: 8, md: 16, lg: 24, xl: 32,
+  xs: 4, sm: 10, md: 18, lg: 28, xl: 36,
 };
 
 export const radius = {
-  sm: 6, md: 10, lg: 14, xl: 20,
+  sm: 8, md: 12, lg: 16, xl: 24,
 };
 
+const monoFallback = "monospace";
+const sansFamily = "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+
 export const font = {
-  mono: 'Courier',
-  sizeXs: 10,
-  sizeSm: 12,
-  sizeMd: 14,
-  sizeLg: 16,
-  sizeXl: 20,
-  sizeXxl: 28,
-  sizeTitle: 36,
+  mono: `'Courier New', ${monoFallback}`,
+  sans: sansFamily,
+  sizeXs: 11,
+  sizeSm: 13,
+  sizeMd: 15,
+  sizeLg: 17,
+  sizeXl: 22,
+  sizeXxl: 30,
+  sizeTitle: 40,
 };

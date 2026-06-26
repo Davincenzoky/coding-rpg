@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import { View, Animated, StyleSheet } from 'react-native';
 import { colors } from '../theme';
 
-export default function AnimatedEnemy({ enemy }) {
+export default function AnimatedEnemy({ enemy, scale = 1 }) {
   const bounceAnim = useRef(new Animated.Value(0)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
 
@@ -56,9 +56,9 @@ export default function AnimatedEnemy({ enemy }) {
       style={[
         styles.wrapper,
         {
-          left: enemy.x - 15,
-          top: enemy.y - 15,
-          transform: [{ translateY: bounceY }, { scale: pulseAnim }],
+          left: enemy.x * scale - 15 * scale,
+          top: enemy.y * scale - 15 * scale,
+          transform: [{ translateY: bounceY }, { scale: pulseAnim * scale }],
         },
       ]}
     >

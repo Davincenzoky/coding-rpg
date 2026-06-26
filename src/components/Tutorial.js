@@ -4,10 +4,12 @@ import { colors, spacing, radius, font } from '../theme';
 
 const STEPS = [
   { title: '🛡️ Welcome to Code Defense!', desc: 'Your server is under attack by bugs! Write code to build defense towers.', color: colors.accent },
-  { title: '📍 Place a Tower', desc: 'See those empty [+] spots on the path? Tap one to start building a tower there.', color: colors.warning },
+  { title: '📍 Place a Tower', desc: 'Towers have types: 🛡️Basic, ❄️Ice (slows), 🎯Sniper (high damage), ⚡MG (fast fire). Tap a [+] spot to build!', color: colors.warning },
   { title: '💻 Solve the Challenge', desc: 'A code challenge will pop up. Fill in the blank to activate the tower!', color: colors.success },
-  { title: '🐛 Defend the Path', desc: 'Active towers auto-fire at bugs passing by. Wrong answers cost you 1 life!', color: colors.danger },
-  { title: '🏆 Win the Level', desc: 'Survive all waves to win! Complete all levels to become a Code Master!', color: colors.primary },
+  { title: '⬆️ Upgrade Towers', desc: 'Tap an active tower to see its info. Solve more challenges to upgrade it (up to Lv.5)!', color: colors.success },
+  { title: '🐛 Enemy Types', desc: 'Watch for 🏃Fast bugs, 🛡️Tank bugs, and 👾BOSS bugs! Each wave gets harder.', color: colors.danger },
+  { title: '💪 Multiple Waves', desc: 'Higher levels have 2-4 waves. Survive them all to win!', color: colors.danger },
+  { title: '🏆 Win the Level', desc: 'Complete all waves to win! Become a Code Master!', color: colors.primary },
 ];
 
 export default function Tutorial({ onComplete }) {
@@ -29,10 +31,12 @@ export default function Tutorial({ onComplete }) {
 
         <View style={styles.illustration}>
           {step === 0 && <Text style={styles.emoji}>🛡️💻🐛</Text>}
-          {step === 1 && <Text style={styles.emoji}>📍 [🏗️]</Text>}
+          {step === 1 && <Text style={styles.emoji}>📍🛡️❄️🎯⚡</Text>}
           {step === 2 && <Text style={styles.emoji}>💻 ➜ ✅</Text>}
-          {step === 3 && <Text style={styles.emoji}>🏗️🔫🐛</Text>}
-          {step === 4 && <Text style={styles.emoji}>🏆🎉</Text>}
+          {step === 3 && <Text style={styles.emoji}>⬆️ 1➜5</Text>}
+          {step === 4 && <Text style={styles.emoji}>🏃🐛🛡️🐛👾</Text>}
+          {step === 5 && <Text style={styles.emoji}>🌊🌊🌊🌊</Text>}
+          {step === 6 && <Text style={styles.emoji}>🏆🎉</Text>}
         </View>
 
         <TouchableOpacity

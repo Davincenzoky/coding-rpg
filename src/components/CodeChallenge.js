@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { View, Text, TouchableOpacity, Animated, StyleSheet, ScrollView } from 'react-native';
 import { colors, spacing, radius, font } from '../theme';
+import useKeyboard from '../hooks/useKeyboard';
 
 function shuffle(arr) {
   const a = [...arr];
@@ -16,7 +17,8 @@ export default function CodeChallenge({ challenge, onSolve, onFail, onClose }) {
   const [showHint, setShowHint] = useState(false);
   const [hasError, setHasError] = useState(false);
   const shakeAnim = useRef(new Animated.Value(0)).current;
-  const shuffled = useMemo(() => shuffle(challenge.choices), [challenge.id]);
+  const choices = challenge?.choices || ['a', 'b', 'c', 'd', 'e', 'f'];
+  const shuffled = useMemo(() => shuffle(choices), [challenge?.id]);
 
   function shake() {
     Animated.sequence([
@@ -47,6 +49,14 @@ export default function CodeChallenge({ challenge, onSolve, onFail, onClose }) {
   function handleSkip() {
     onClose();
   }
+
+  useKeyboard([
+    { key: 'Escape', fn: () => { onClose(); return false; } },
+    ...shuffled.map((choice, i) => ({
+      key: String(i + 1),
+      fn: () => { if (!selected) handleBlockPress(choice); return false; },
+    })),
+  ]);
 
   const codeLines = challenge.code.split('\n');
 
@@ -138,7 +148,7 @@ export default function CodeChallenge({ challenge, onSolve, onFail, onClose }) {
 
           {showHint && (
             <View style={styles.hintBar}>
-              <Text style={styles.hintText}>💡 {challenge.hints[0]}</Text>
+              <Text style={styles.hintText}>💡 {challenge.hints?.[0] || 'Think carefully about what the missing code should do.'}</Text>
             </View>
           )}
 

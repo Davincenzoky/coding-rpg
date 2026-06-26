@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { View, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import { colors } from './src/theme';
 import { AuthProvider, useAuth } from './src/context/AuthContext';
+import { ThemeProvider, useTheme } from './src/contexts/ThemeContext';
+import ResponsiveContainer from './src/components/ui/ResponsiveContainer';
 import HomeScreen from './src/screens/HomeScreen';
 import TechStackScreen from './src/screens/TechStackScreen';
 import AuthScreen from './src/screens/AuthScreen';
@@ -12,8 +14,26 @@ import TermsScreen from './src/screens/TermsScreen';
 import GameScreen from './src/screens/GameScreen';
 import { generateLevel } from './src/data/levels';
 
+class ErrorBoundary extends React.Component {
+  constructor(props) { super(props); this.state = { error: null }; }
+  static getDerivedStateFromError(error) { return { error }; }
+  render() {
+    if (this.state.error) {
+      return (
+        <View style={{ flex: 1, backgroundColor: 'var(--color-bg)', justifyContent: 'center', alignItems: 'center', padding: 20 }}>
+          <Text style={{ color: 'var(--color-primary)', fontSize: 18, fontWeight: 'bold', marginBottom: 8 }}>⚠️ Error</Text>
+          <Text style={{ color: 'var(--color-text)', fontSize: 13, textAlign: 'center', marginBottom: 4 }}>{this.state.error.message}</Text>
+          <Text style={{ color: 'var(--color-textDim)', fontSize: 11, textAlign: 'center' }}>{this.state.error.stack?.split('\n').slice(0, 4).join('\n')}</Text>
+        </View>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 function AppContent() {
   const { user, loading } = useAuth();
+  const { isDark } = useTheme();
   const [screen, setScreen] = useState(null);
   const [techStack, setTechStack] = useState(null);
   const [currentLevel, setCurrentLevel] = useState(1);
@@ -65,8 +85,10 @@ function AppContent() {
   if (screen === 'auth') {
     return (
       <View style={styles.container}>
-        <StatusBar style="light" />
-        <AuthScreen />
+        <StatusBar style={isDark ? 'light' : 'dark'} />
+        <ResponsiveContainer>
+          <AuthScreen />
+        </ResponsiveContainer>
       </View>
     );
   }
@@ -74,13 +96,15 @@ function AppContent() {
   if (screen === 'home') {
     return (
       <View style={styles.container}>
-        <StatusBar style="light" />
-        <HomeScreen
-          onStart={handlePlay}
-          onLeaderboard={() => setScreen('leaderboard')}
-          onSettings={() => setScreen('settings')}
-          userEmail={user?.email}
-        />
+        <StatusBar style={isDark ? 'light' : 'dark'} />
+        <ResponsiveContainer>
+          <HomeScreen
+            onStart={handlePlay}
+            onLeaderboard={() => setScreen('leaderboard')}
+            onSettings={() => setScreen('settings')}
+            userEmail={user?.email}
+          />
+        </ResponsiveContainer>
       </View>
     );
   }
@@ -88,8 +112,10 @@ function AppContent() {
   if (screen === 'leaderboard') {
     return (
       <View style={styles.container}>
-        <StatusBar style="light" />
-        <LeaderboardScreen onBack={handleBack} />
+        <StatusBar style={isDark ? 'light' : 'dark'} />
+        <ResponsiveContainer>
+          <LeaderboardScreen onBack={handleBack} />
+        </ResponsiveContainer>
       </View>
     );
   }
@@ -97,13 +123,15 @@ function AppContent() {
   if (screen === 'settings') {
     return (
       <View style={styles.container}>
-        <StatusBar style="light" />
-        <SettingsScreen
-          userEmail={user?.email}
-          onBack={handleBack}
-          onLogout={handleLogout}
-          onTerms={() => setScreen('terms')}
-        />
+        <StatusBar style={isDark ? 'light' : 'dark'} />
+        <ResponsiveContainer>
+          <SettingsScreen
+            userEmail={user?.email}
+            onBack={handleBack}
+            onLogout={handleLogout}
+            onTerms={() => setScreen('terms')}
+          />
+        </ResponsiveContainer>
       </View>
     );
   }
@@ -111,8 +139,10 @@ function AppContent() {
   if (screen === 'terms') {
     return (
       <View style={styles.container}>
-        <StatusBar style="light" />
-        <TermsScreen onBack={handleBack} />
+        <StatusBar style={isDark ? 'light' : 'dark'} />
+        <ResponsiveContainer>
+          <TermsScreen onBack={handleBack} />
+        </ResponsiveContainer>
       </View>
     );
   }
@@ -120,8 +150,10 @@ function AppContent() {
   if (screen === 'techSelect') {
     return (
       <View style={styles.container}>
-        <StatusBar style="light" />
-        <TechStackScreen onSelect={handleTechSelect} onBack={handleBack} />
+        <StatusBar style={isDark ? 'light' : 'dark'} />
+        <ResponsiveContainer>
+          <TechStackScreen onSelect={handleTechSelect} onBack={handleBack} />
+        </ResponsiveContainer>
       </View>
     );
   }
@@ -129,7 +161,7 @@ function AppContent() {
   if (screen === 'game' && levelData) {
     return (
       <View style={styles.container}>
-        <StatusBar style="light" />
+        <StatusBar style={isDark ? 'light' : 'dark'} />
         <GameScreen
           key={`${techStack.id}-${currentLevel}`}
           techStack={techStack}
@@ -149,9 +181,13 @@ function AppContent() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <ErrorBoundary>
+          <AppContent />
+        </ErrorBoundary>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 

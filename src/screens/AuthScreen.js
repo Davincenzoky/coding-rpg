@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, Image, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
 import { signUp, signIn } from '../services/authService';
 import { colors, spacing, radius, font } from '../theme';
 
@@ -25,13 +25,10 @@ export default function AuthScreen() {
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <View style={styles.topSection}>
-        <View style={styles.logoWrap}>
-          <Text style={styles.logo}>🛡️</Text>
+        <View style={styles.topSection}>
+          <Image source={require('../assets/logo.png')} style={styles.logoImg} resizeMode="contain" />
+          <Text style={styles.subtitle}>{isLogin ? 'Welcome back' : 'Start your journey'}</Text>
         </View>
-        <Text style={styles.title}>CODE DEFENSE</Text>
-        <Text style={styles.subtitle}>{isLogin ? 'Welcome back' : 'Start your journey'}</Text>
-      </View>
 
       <View style={styles.card}>
         <Text style={styles.cardTitle}>{isLogin ? 'Sign In' : 'Create Account'}</Text>
@@ -87,14 +84,7 @@ export default function AuthScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.bg, justifyContent: 'center', alignItems: 'center', padding: spacing.lg },
   topSection: { alignItems: 'center', marginBottom: spacing.xl },
-  logoWrap: {
-    width: 80, height: 80, borderRadius: 40,
-    backgroundColor: colors.bgCard, justifyContent: 'center', alignItems: 'center',
-    borderWidth: 2, borderColor: colors.primary, marginBottom: spacing.md,
-    boxShadow: `0 0 30px ${colors.primaryGlow}`,
-  },
-  logo: { fontSize: 40 },
-  title: { color: colors.primary, fontSize: font.sizeTitle, fontWeight: 'bold', letterSpacing: 3 },
+  logoImg: { width: 260, height: 80, marginBottom: spacing.md },
   subtitle: { color: colors.textDim, fontSize: font.sizeMd, marginTop: spacing.xs },
   card: {
     backgroundColor: colors.bgCard, borderRadius: radius.xl, padding: spacing.lg,

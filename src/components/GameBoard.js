@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, useWindowDimensions } from 'react-native';
 import { CELL_SIZE } from '../utils/gameEngine';
 import AnimatedEnemy from './AnimatedEnemy';
 import AnimatedTower from './AnimatedTower';
@@ -17,8 +17,13 @@ export default function GameBoard({
   onTowerPress,
   towerRanges,
 }) {
-  const boardWidth = COLS * CELL_SIZE;
-  const boardHeight = ROWS * CELL_SIZE;
+  const { width: winWidth } = useWindowDimensions();
+  const scale = Math.min(1, (winWidth - 32) / (COLS * CELL_SIZE));
+
+  const cellSize = CELL_SIZE * scale;
+
+  const boardWidth = COLS * cellSize;
+  const boardHeight = ROWS * cellSize;
 
   const gridLines = useMemo(() => {
     const lines = [];
@@ -26,7 +31,7 @@ export default function GameBoard({
       lines.push(
         <View
           key={`v-${x}`}
-          style={[styles.gridLine, styles.vLine, { left: x * CELL_SIZE }]}
+          style={[styles.gridLine, styles.vLine, { left: x * cellSize }]}
         />
       );
     }
@@ -34,12 +39,12 @@ export default function GameBoard({
       lines.push(
         <View
           key={`h-${y}`}
-          style={[styles.gridLine, styles.hLine, { top: y * CELL_SIZE }]}
+          style={[styles.gridLine, styles.hLine, { top: y * cellSize }]}
         />
       );
     }
     return lines;
-  }, []);
+  }, [cellSize]);
 
   const pathCells = useMemo(
     () =>
@@ -51,7 +56,7 @@ export default function GameBoard({
             key={`path-${i}`}
             style={[
               styles.pathCell,
-              { left: p.x * CELL_SIZE, top: p.y * CELL_SIZE },
+              { left: p.x * cellSize, top: p.y * cellSize, width: cellSize, height: cellSize },
               isStart && styles.startCell,
               isEnd && styles.endCell,
             ]}
@@ -61,7 +66,7 @@ export default function GameBoard({
           </View>
         );
       }),
-    [level.path]
+    [level.path, cellSize]
   );
 
   const towerElements = useMemo(
@@ -76,8 +81,11 @@ export default function GameBoard({
             style={[
               styles.towerSpot,
               {
-                left: spot.x * CELL_SIZE + 2,
-                top: spot.y * CELL_SIZE + 2,
+                left: spot.x * cellSize + 2 * scale,
+                top: spot.y * cellSize + 2 * scale,
+                width: cellSize - 4 * scale,
+                height: cellSize - 4 * scale,
+                borderRadius: radius.lg * scale,
               },
               solved && styles.towerSpotSolved,
             ]}
@@ -87,21 +95,24 @@ export default function GameBoard({
             <AnimatedTower
               solved={solved}
               onPress={() => onTowerPress && onTowerPress(spot, tower)}
+              scale={scale}
+              towerType={tower?.type || spot.towerType || 'normal'}
+              level={tower?.level || 1}
             />
           </TouchableOpacity>
         );
       }),
-    [level.towerSpots, towers, towerRanges]
+    [level.towerSpots, towers, towerRanges, cellSize, scale]
   );
 
   const enemyElements = enemies
     .filter((e) => e.alive)
     .map((enemy) => (
-      <AnimatedEnemy key={enemy.id} enemy={enemy} />
+      <AnimatedEnemy key={enemy.id} enemy={enemy} scale={scale} />
     ));
 
   const projectileElements = projectiles.map((p) => (
-    <AnimatedProjectile key={p.id} projectile={p} />
+    <AnimatedProjectile key={p.id} projectile={p} scale={scale} />
   ));
 
   return (
@@ -118,7 +129,7 @@ export default function GameBoard({
 }
 
 const styles = StyleSheet.create({
-  container: { alignItems: 'center', padding: spacing.sm },
+  container: { alignItems: 'center', padding: spacing.sm, width: '100%' },
   grid: {
     position: 'relative',
     backgroundColor: colors.bgDark,
@@ -131,7 +142,7 @@ const styles = StyleSheet.create({
   vLine: { width: 1, height: '100%', top: 0 },
   hLine: { height: 1, width: '100%', left: 0 },
   pathCell: {
-    position: 'absolute', width: CELL_SIZE, height: CELL_SIZE,
+    position: 'absolute',
     backgroundColor: colors.bgCard2, borderWidth: 1, borderColor: colors.border,
     justifyContent: 'center', alignItems: 'center',
   },
@@ -139,8 +150,7 @@ const styles = StyleSheet.create({
   endCell: { backgroundColor: 'rgba(233,69,96,0.12)' },
   pathLabel: { color: 'rgba(255,255,255,0.25)', fontSize: font.sizeSm, fontWeight: 'bold' },
   towerSpot: {
-    position: 'absolute', width: CELL_SIZE - 4, height: CELL_SIZE - 4,
-    borderRadius: radius.lg,
+    position: 'absolute',
     backgroundColor: 'rgba(233,69,96,0.06)',
     borderWidth: 2, borderColor: colors.primary, borderStyle: 'dashed',
     justifyContent: 'center', alignItems: 'center', zIndex: 5,

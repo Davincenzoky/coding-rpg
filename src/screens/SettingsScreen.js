@@ -4,8 +4,10 @@ import { logOut } from '../services/authService';
 import { getProfile, updateUsername } from '../services/leaderboardService';
 import Header from '../components/ui/Header';
 import { colors, spacing, radius, font } from '../theme';
+import { useTheme } from '../contexts/ThemeContext';
 
 export default function SettingsScreen({ userEmail, onBack, onLogout, onTerms }) {
+  const { isDark, toggleTheme } = useTheme();
   const [username, setUsername] = useState('');
   const [saved, setSaved] = useState('');
 
@@ -52,6 +54,14 @@ export default function SettingsScreen({ userEmail, onBack, onLogout, onTerms })
           <Text style={styles.arrow}>→</Text>
         </TouchableOpacity>
 
+        <Text style={styles.section}>APPEARANCE</Text>
+        <TouchableOpacity style={styles.themeRow} onPress={toggleTheme}>
+          <Text style={styles.themeText}>{isDark ? '☀️  Light Mode' : '🌙  Dark Mode'}</Text>
+          <View style={[styles.toggleTrack, isDark && styles.toggleTrackActive]}>
+            <View style={[styles.toggleThumb, isDark && styles.toggleThumbActive]} />
+          </View>
+        </TouchableOpacity>
+
         <Text style={styles.section}>ACCOUNT</Text>
         <TouchableOpacity style={styles.logoutBtn} onPress={() => { logOut(); onLogout(); }}>
           <Text style={styles.logoutText}>🚪  Logout</Text>
@@ -77,6 +87,12 @@ const styles = StyleSheet.create({
   optionRow: { backgroundColor: colors.bgCard, borderRadius: radius.lg, padding: spacing.md, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderWidth: 1, borderColor: colors.border },
   optionText: { color: colors.text, fontSize: font.sizeMd },
   arrow: { color: colors.textMuted, fontSize: 18 },
+  themeRow: { backgroundColor: colors.bgCard, borderRadius: radius.lg, padding: spacing.md, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderWidth: 1, borderColor: colors.border },
+  themeText: { color: colors.text, fontSize: font.sizeMd },
+  toggleTrack: { width: 48, height: 26, borderRadius: 13, backgroundColor: '#555577', justifyContent: 'center', paddingHorizontal: 3 },
+  toggleTrackActive: { backgroundColor: '#e94560' },
+  toggleThumb: { width: 20, height: 20, borderRadius: 10, backgroundColor: '#fff' },
+  toggleThumbActive: { alignSelf: 'flex-end' },
   logoutBtn: { backgroundColor: 'rgba(255,107,107,0.08)', borderRadius: radius.lg, padding: spacing.md, alignItems: 'center', borderWidth: 1, borderColor: 'rgba(255,107,107,0.2)' },
   logoutText: { color: colors.danger, fontSize: font.sizeLg, fontWeight: 'bold' },
   version: { color: colors.textMuted, fontSize: font.sizeXs, textAlign: 'center', marginTop: 30 },
