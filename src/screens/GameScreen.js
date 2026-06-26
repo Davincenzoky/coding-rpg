@@ -19,6 +19,8 @@ import { saveScore } from '../services/leaderboardService';
 import { colors, spacing, radius, font } from '../theme';
 import useKeyboard from '../hooks/useKeyboard';
 import useSound from '../hooks/useSound';
+import AchievementPopup from '../components/AchievementPopup';
+import { ACHIEVEMENTS, loadAchievements, checkAndUnlockAchievements } from '../data/achievements';
 
 let tutorialShown = false;
 
@@ -34,6 +36,10 @@ export default function GameScreen({ techStack, level, onBack, levelNum, maxLeve
   const [showTutorial, setShowTutorial] = useState(!tutorialShown);
   const [towerRanges, setTowerRanges] = useState([]);
   const [waveCountdown, setWaveCountdown] = useState(null);
+  const [newAchievement, setNewAchievement] = useState(null);
+  const [builtTypes, setBuiltTypes] = useState(new Set());
+  const streakRef = useRef(0);
+  const totalWinsRef = useRef(0);
   const [countdownNumber, setCountdownNumber] = useState(null);
   const barAnim = useRef(new Animated.Value(1)).current;
   const countdownScale = useRef(new Animated.Value(1.5)).current;
@@ -181,6 +187,7 @@ export default function GameScreen({ techStack, level, onBack, levelNum, maxLeve
   useEffect(() => {
     if (state.lives <= 0 && !state.gameOver) {
       playGameOver();
+      streakRef.current = 0;
       setState((prev) => ({ ...prev, gameOver: true }));
     }
   }, [state.lives]);
@@ -188,6 +195,29 @@ export default function GameScreen({ techStack, level, onBack, levelNum, maxLeve
   useEffect(() => {
     if (state.victory) {
       playVictory();
+      totalWinsRef.current += 1;
+      streakRef.current += 1;
+      if (userEmail) {
+        const achData = loadAchievements(userEmail);
+        const allTowersSolved = state.towers.every((t) => t.solved);
+        const hasUpgrade = state.towers.some((t) => t.level >= 5);
+        const noHitter = state.lives === 10;
+        const allTypes = ['normal', 'ice', 'sniper', 'mgun'].every((t) => builtTypes.has(t));
+        const earned = {
+          first_win: totalWinsRef.current,
+          tower_master: allTowersSolved ? 1 : 0,
+          no_hitter: noHitter ? 1 : 0,
+          collector: allTypes ? 4 : builtTypes.size,
+          upgrader: hasUpgrade ? 1 : 0,
+          persistent: totalWinsRef.current,
+          code_ninja: totalWinsRef.current,
+          unstoppable: totalWinsRef.current,
+          five_streak: streakRef.current,
+          perfect_level: (noHitter && allTowersSolved) ? 1 : 0,
+        };
+        const { newUnlock } = checkAndUnlockAchievements(userEmail, earned, achData);
+        if (newUnlock) setNewAchievement(newUnlock);
+      }
     }
   }, [state.victory]);
 
@@ -286,6 +316,8 @@ export default function GameScreen({ techStack, level, onBack, levelNum, maxLeve
       showMessage(`+${reward} pts! Tower upgraded to Lv.${tower.level + 1}!`, 'success');
     } else {
       playTowerPlace();
+      const towerData = stateRef.current.towers[challengeTower.towerIndex];
+      if (towerData?.type) setBuiltTypes((prev) => new Set([...prev, towerData.type]));
       showMessage(`+${reward} pts! Tower activated!`, 'success');
     }
   }
@@ -440,6 +472,10 @@ export default function GameScreen({ techStack, level, onBack, levelNum, maxLeve
         >
           <Text style={styles.messageText}>{gameMessage}</Text>
         </Animated.View>
+      ) : null}
+
+      {newAchievement ? (
+        <AchievementPopup achievement={newAchievement} onDone={() => setNewAchievement(null)} />
       ) : null}
 
       {waveCountdown ? (

@@ -13,7 +13,7 @@ const LINES = [
   { text: '> Ready to deploy? (Y/n)', color: colors.warning },
 ];
 
-export default function HomeScreen({ onStart, onLeaderboard, onSettings, userEmail }) {
+export default function HomeScreen({ onStart, onLeaderboard, onSettings, onAchievements, userEmail }) {
   const [visible, setVisible] = useState(0);
   const [typing, setTyping] = useState('');
   const [charIdx, setCharIdx] = useState(0);
@@ -61,6 +61,9 @@ export default function HomeScreen({ onStart, onLeaderboard, onSettings, userEma
           </TouchableOpacity>
           <TouchableOpacity style={styles.secondaryBtn} onPress={onLeaderboard}>
             <Text style={styles.secondaryBtnText}>🏆  Leaderboard</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.secondaryBtn} onPress={onAchievements}>
+            <Text style={styles.secondaryBtnText}>🏅  Achievements</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.secondaryBtn} onPress={onSettings}>
             <Text style={styles.secondaryBtnText}>⚙️  Settings</Text>

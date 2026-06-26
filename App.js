@@ -11,6 +11,7 @@ import AuthScreen from './src/screens/AuthScreen';
 import LeaderboardScreen from './src/screens/LeaderboardScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
 import TermsScreen from './src/screens/TermsScreen';
+import AchievementsScreen from './src/screens/AchievementsScreen';
 import GameScreen from './src/screens/GameScreen';
 import { generateLevel } from './src/data/levels';
 
@@ -54,7 +55,7 @@ function AppContent() {
 
   function handleBack() {
     if (screen === 'game') setScreen('techSelect');
-    else if (screen === 'leaderboard' || screen === 'techSelect' || screen === 'settings' || screen === 'terms')
+    else if (screen === 'leaderboard' || screen === 'techSelect' || screen === 'settings' || screen === 'terms' || screen === 'achievements')
       setScreen('home');
     else setScreen('home');
   }
@@ -102,6 +103,7 @@ function AppContent() {
             onStart={handlePlay}
             onLeaderboard={() => setScreen('leaderboard')}
             onSettings={() => setScreen('settings')}
+            onAchievements={() => setScreen('achievements')}
             userEmail={user?.email}
           />
         </ResponsiveContainer>
@@ -142,6 +144,17 @@ function AppContent() {
         <StatusBar style={isDark ? 'light' : 'dark'} />
         <ResponsiveContainer>
           <TermsScreen onBack={handleBack} />
+        </ResponsiveContainer>
+      </View>
+    );
+  }
+
+  if (screen === 'achievements') {
+    return (
+      <View style={styles.container}>
+        <StatusBar style={isDark ? 'light' : 'dark'} />
+        <ResponsiveContainer>
+          <AchievementsScreen userEmail={user?.email} onBack={handleBack} />
         </ResponsiveContainer>
       </View>
     );
