@@ -20,7 +20,7 @@ function buildLines(userEmail) {
   ];
 }
 
-export default function HomeScreen({ onStart, onLeaderboard, onSettings, onAchievements, userEmail }) {
+export default function HomeScreen({ onStart, onLeaderboard, onSettings, onAchievements, onDailyChallenge, onDailyLeaderboard, userEmail }) {
   const LINES = buildLines(userEmail);
   const [visible, setVisible] = useState(0);
   const [typing, setTyping] = useState('');
@@ -62,6 +62,9 @@ export default function HomeScreen({ onStart, onLeaderboard, onSettings, onAchie
 
       {showBtns ? (
         <View style={styles.btnGroup}>
+          <TouchableOpacity style={styles.dailyBtn} onPress={onDailyChallenge} activeOpacity={0.85}>
+            <Text style={styles.dailyBtnText}>🔥  Daily Challenge</Text>
+          </TouchableOpacity>
           <TouchableOpacity style={styles.primaryBtn} onPress={onStart} activeOpacity={0.85}>
             <Text style={styles.primaryBtnText}>▶  PLAY</Text>
           </TouchableOpacity>
@@ -73,6 +76,9 @@ export default function HomeScreen({ onStart, onLeaderboard, onSettings, onAchie
               <Text style={styles.secondaryBtnText}>🏅  Achievements</Text>
             </TouchableOpacity>
           </View>
+          <TouchableOpacity style={styles.secondaryBtn} onPress={onDailyLeaderboard}>
+            <Text style={styles.secondaryBtnText}>📅  Daily Leaderboard</Text>
+          </TouchableOpacity>
           <TouchableOpacity style={styles.secondaryBtn} onPress={onSettings}>
             <Text style={styles.secondaryBtnText}>⚙️  Settings</Text>
           </TouchableOpacity>
@@ -107,6 +113,11 @@ const styles = StyleSheet.create({
   termLine: { fontFamily: font.mono, fontSize: font.sizeSm, marginBottom: 4, lineHeight: 20 },
   cursor: { color: colors.success, opacity: 0.7 },
   btnGroup: { width: '100%', maxWidth: 360, marginBottom: spacing.lg, gap: 10 },
+  dailyBtn: {
+    backgroundColor: colors.warning, padding: 14, borderRadius: radius.lg, alignItems: 'center',
+    elevation: 6, boxShadow: `0 4px 16px ${colors.warning}66`,
+  },
+  dailyBtnText: { color: '#000', fontSize: font.sizeLg, fontWeight: 'bold', letterSpacing: 1 },
   primaryBtn: {
     backgroundColor: colors.primary, padding: 18, borderRadius: radius.lg, alignItems: 'center',
     elevation: 8, boxShadow: `0 4px 20px ${colors.primaryGlow}`,
