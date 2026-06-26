@@ -26,6 +26,7 @@ export default function HomeScreen({ onStart, onLeaderboard, onSettings, onAchie
   const playerData = userEmail ? loadPlayerData(userEmail) : null;
   const [charIdx, setCharIdx] = useState(0);
   const [showBtns, setShowBtns] = useState(false);
+  const [chatMinimized, setChatMinimized] = useState(true);
 
   useEffect(() => {
     if (visible >= LINES.length) { setShowBtns(true); return; }
@@ -83,7 +84,11 @@ export default function HomeScreen({ onStart, onLeaderboard, onSettings, onAchie
       {(userEmail || isGuest) ? (
         <View style={styles.profileRow}>
           <Text style={styles.userInfo}>👤 {isGuest ? 'Guest' : userEmail}</Text>
-          <ChatWidget userEmail={userEmail} isGuest={isGuest} inlineTrigger={true} />
+          {chatMinimized && (
+            <TouchableOpacity style={styles.inlineTriggerButton} onPress={() => setChatMinimized(false)}>
+              <Text style={styles.inlineTriggerText}>💬 Chat</Text>
+            </TouchableOpacity>
+          )}
         </View>
       ) : null}
 
@@ -95,6 +100,15 @@ export default function HomeScreen({ onStart, onLeaderboard, onSettings, onAchie
         <Text style={styles.footerText}>JavaScript  •  Python  •  HTML/CSS  •  SQL  •  React</Text>
       </View>
     </ScrollView>
+
+    {!chatMinimized && (
+      <ChatWidget
+        userEmail={userEmail}
+        isGuest={isGuest}
+        isMinimized={chatMinimized}
+        onClose={() => setChatMinimized(true)}
+      />
+    )}
     </View>
   );
 }
@@ -134,6 +148,22 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   userInfo: { color: colors.textMuted, fontSize: font.sizeXs },
+  inlineTriggerButton: {
+    backgroundColor: colors.bgCard,
+    borderRadius: radius.md,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 6,
+    borderWidth: 1,
+    borderColor: colors.border,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: spacing.sm,
+  },
+  inlineTriggerText: {
+    color: colors.text,
+    fontSize: font.sizeXs,
+    fontWeight: 'bold',
+  },
   footer: { padding: spacing.sm },
   footerText: { color: colors.textMuted, fontSize: font.sizeXs, letterSpacing: 0.5 },
 });

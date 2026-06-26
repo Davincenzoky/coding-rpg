@@ -7,12 +7,18 @@ import { getProfile } from '../services/leaderboardService';
 
 const sessionGuestId = 'Guest_' + Math.random().toString(36).substr(2, 9);
 
-export default function ChatWidget({ userEmail, isGuest, inlineTrigger = false }) {
+export default function ChatWidget({ userEmail, isGuest, inlineTrigger = false, isMinimized: propIsMinimized, onClose }) {
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState('');
-  const [isMinimized, setIsMinimized] = useState(true);
+  const [isMinimized, setIsMinimized] = useState(propIsMinimized !== undefined ? propIsMinimized : true);
   const [username, setUsername] = useState('Guest');
   const flatListRef = useRef(null);
+
+  useEffect(() => {
+    if (propIsMinimized !== undefined) {
+      setIsMinimized(propIsMinimized);
+    }
+  }, [propIsMinimized]);
 
   const currentUserId = userEmail || sessionGuestId;
 
@@ -110,7 +116,7 @@ export default function ChatWidget({ userEmail, isGuest, inlineTrigger = false }
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerText}>🔊 Global Chat</Text>
-        <TouchableOpacity onPress={() => setIsMinimized(true)}>
+        <TouchableOpacity onPress={() => { setIsMinimized(true); if (onClose) onClose(); }}>
           <Text style={styles.closeBtn}>−</Text>
         </TouchableOpacity>
       </View>
