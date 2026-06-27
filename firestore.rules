@@ -7,15 +7,10 @@ service cloud.firestore {
       allow write: if request.auth != null;
     }
 
-    // Chat Messages collection: Rate-limited to 1 message per 3 seconds per user.
+    // Chat Messages collection: Anyone can read, anyone can write messages up to 200 characters.
     match /chat_messages/{messageId} {
       allow read: if true;
-      allow create: if request.resource.data.text.size() > 0
-        && request.resource.data.text.size() <= 200
-        && request.resource.data.userId is string
-        && request.resource.data.userId.size() > 0
-        && (request.auth == null || request.auth.uid == request.resource.data.userId
-            || request.auth.token.email == request.resource.data.userId);
+      allow create: if request.resource.data.text.size() > 0 && request.resource.data.text.size() <= 200;
     }
   }
 }

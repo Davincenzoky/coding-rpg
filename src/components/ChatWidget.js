@@ -59,15 +59,15 @@ export default function ChatWidget({ userEmail, isGuest, inlineTrigger = false, 
       }));
       setMessages(newMessages.reverse());
     }, (error) => {
-      console.error('Chat error:', error);
+      console.error('Chat error:', error.code, error.message);
       const msg = error.message || '';
       if (msg.includes('index') && msg.includes('https://')) {
         const url = msg.match(/https:\/\/[^\s]+/)?.[0];
-        setChatError(url ? `Need index: ${url}` : 'Database index required. Check console.');
-      } else if (msg.includes('permission') || msg.includes('denied')) {
-        setChatError('Permission denied.');
+        setChatError(url ? `Need index: Create it at ${url}` : 'Database index required. Check console.');
+      } else if (msg.includes('permission') || msg.includes('denied') || msg.includes('PERMISSION_DENIED') || error.code === 'permission-denied') {
+        setChatError('Permission denied — ask dev to deploy Firestore rules.');
       } else {
-        setChatError('Chat unavailable.');
+        setChatError('Chat unavailable (' + (error.code || 'unknown') + ')');
       }
     });
 
