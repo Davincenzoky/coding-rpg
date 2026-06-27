@@ -15,15 +15,18 @@ export default function ChatWidget({ userEmail, isGuest, inlineTrigger = false, 
   const [chatError, setChatError] = useState(null);
   const [replyTo, setReplyTo] = useState(null);
   const [editingMessage, setEditingMessage] = useState(null);
+  const [lastSeenCount, setLastSeenCount] = useState(0);
   const flatListRef = useRef(null);
   const inputRef = useRef(null);
 
   useEffect(() => {
     if (propIsMinimized !== undefined) {
       setIsMinimized(propIsMinimized);
+      if (!propIsMinimized) setLastSeenCount(messages.length);
     }
   }, [propIsMinimized]);
 
+  const unreadCount = Math.max(0, messages.length - lastSeenCount);
   const currentUserId = userEmail || sessionGuestId;
 
   useEffect(() => {
@@ -200,14 +203,21 @@ export default function ChatWidget({ userEmail, isGuest, inlineTrigger = false, 
   if (isMinimized) {
     if (inlineTrigger) {
       return (
-        <TouchableOpacity style={styles.inlineTriggerButton} onPress={() => setIsMinimized(false)}>
-          <Text style={styles.inlineTriggerText}>💬 Chat ({messages.length})</Text>
+        <TouchableOpacity style={styles.inlineTriggerButton} onPress={() => { setIsMinimized(false); setLastSeenCount(messages.length); }}>
+          <Text style={styles.inlineTriggerText}>💬 Chat ({messages.length}){unreadCount > 0 && <Text style={styles.badgeText}> 🔴{unreadCount}</Text>}</Text>
         </TouchableOpacity>
       );
     }
     return (
-      <TouchableOpacity style={styles.minimizedContainer} onPress={() => setIsMinimized(false)}>
-        <Text style={styles.minimizedText}>💬 {messages.length > 0 ? messages.length : 0} Messages</Text>
+      <TouchableOpacity style={styles.minimizedContainer} onPress={() => { setIsMinimized(false); setLastSeenCount(messages.length); }}>
+        <View style={styles.minimizedRow}>
+          <Text style={styles.minimizedText}>💬 {messages.length > 0 ? messages.length : 0} Messages</Text>
+          {unreadCount > 0 && (
+            <View style={styles.badge}>
+              <Text style={styles.badgeLabel}>{unreadCount}</Text>
+            </View>
+          )}
+        </View>
       </TouchableOpacity>
     );
   }
@@ -323,6 +333,29 @@ const styles = StyleSheet.create({
   minimizedText: {
     color: colors.text,
     fontSize: font.sizeSm,
+    fontWeight: 'bold',
+  },
+  minimizedRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  badge: {
+    backgroundColor: colors.danger,
+    borderRadius: 10,
+    minWidth: 20,
+    height: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 6,
+  },
+  badgeLabel: {
+    color: '#fff',
+    fontSize: 11,
+    fontWeight: 'bold',
+  },
+  badgeText: {
+    color: colors.danger,
     fontWeight: 'bold',
   },
   inlineTriggerButton: {
