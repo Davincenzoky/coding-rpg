@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
 import { colors, spacing, radius, font } from '../theme';
-import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp, limit } from 'firebase/firestore';
+import { collection, query, onSnapshot, addDoc, serverTimestamp, limit } from 'firebase/firestore';
 import { db } from '../services/firebase';
 import { getProfile } from '../services/leaderboardService';
 
@@ -48,16 +48,17 @@ export default function ChatWidget({ userEmail, isGuest, inlineTrigger = false, 
 
   useEffect(() => {
     const messagesRef = collection(db, 'chat_messages');
-    const q = query(messagesRef, orderBy('timestamp', 'desc'), limit(100));
+    const q = query(messagesRef, limit(100));
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
       setChatError(null);
       const newMessages = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
-        timestamp: doc.data().timestamp?.toDate?.() || new Date(),
+        timestamp: doc.data().timestamp?.toDate?.() || new Date(doc.data().clientTimestamp || 0),
       }));
-      setMessages(newMessages.reverse());
+      newMessages.sort((a, b) => b.timestamp - a.timestamp);
+      setMessages(newMessages);
     }, (error) => {
       console.error('Chat error:', error.code, error.message);
       const msg = error.message || '';
@@ -81,6 +82,7 @@ export default function ChatWidget({ userEmail, isGuest, inlineTrigger = false, 
       await addDoc(collection(db, 'chat_messages'), {
         text: inputText.trim(),
         timestamp: serverTimestamp(),
+        clientTimestamp: Date.now(),
         user: username,
         userId: currentUserId,
       });
