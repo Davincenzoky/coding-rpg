@@ -339,8 +339,7 @@ export default function GameScreen({ techStack, level, onBack, levelNum, maxLeve
 
   function handleFail() {
     playWrongAnswer();
-    setState((prev) => ({ ...prev, lives: prev.lives - 1 }));
-    showMessage('Wrong! -1 Life', 'error');
+    showMessage('Wrong answer, try again!', 'error');
     setShowChallenge(false);
     setCurrentChallenge(null);
   }
