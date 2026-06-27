@@ -92,8 +92,10 @@ export default function ChatWidget({ userEmail, isGuest, inlineTrigger = false, 
         });
         setInputText('');
         setEditingMessage(null);
+        setChatError(null);
       } catch (error) {
         console.error('Error updating message:', error);
+        setChatError('Edit failed: ' + (error.message || error.code || 'unknown'));
       }
       return;
     }
@@ -135,7 +137,12 @@ export default function ChatWidget({ userEmail, isGuest, inlineTrigger = false, 
       if (!window.confirm('Delete this message?')) return;
     }
     const msgRef = doc(db, 'chat_messages', msg.id);
-    deleteDoc(msgRef).catch(err => console.error('Error deleting message:', err));
+    deleteDoc(msgRef).then(() => {
+      setChatError(null);
+    }).catch(err => {
+      console.error('Error deleting message:', err);
+      setChatError('Delete failed: ' + (err.message || err.code || 'unknown'));
+    });
   }, []);
 
   const cancelEdit = useCallback(() => {
