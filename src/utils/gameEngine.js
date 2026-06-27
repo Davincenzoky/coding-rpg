@@ -11,7 +11,7 @@ export const ENEMY_TYPES = {
   normal: { label: 'Bug', speedMult: 1, hpMult: 1, bodyColor: '#c62828', size: 1 },
   fast:   { label: 'Fast Bug', speedMult: 2, hpMult: 0.5, bodyColor: '#e65100', size: 0.8 },
   tanky:  { label: 'Tank Bug', speedMult: 0.5, hpMult: 3, bodyColor: '#4a148c', size: 1.4 },
-  boss:   { label: 'BOSS', speedMult: 1.2, hpMult: 6, bodyColor: '#ff6d00', size: 2.5 },
+  boss:   { label: 'BOSS', speedMult: 0.4, hpMult: 6, bodyColor: '#ff6d00', size: 2.5 },
 };
 
 function getWaveConfig(level, waveIndex) {
@@ -82,7 +82,7 @@ export function updateGame(state, dt) {
   }
 
   newState.spawnTimer += dt;
-  if (newState.spawnTimer > 1.0 && newState.pathIndex < waveConfig.enemiesPerWave) {
+  if (newState.spawnTimer > 1.2 && newState.pathIndex < waveConfig.enemiesPerWave) {
     const isLastEnemy = newState.pathIndex === waveConfig.enemiesPerWave - 1;
     const hasBoss = waveConfig.enemyTypes && waveConfig.enemyTypes.includes('boss');
     const nonBossTypes = (waveConfig.enemyTypes || ['normal']).filter(t => t !== 'boss');
