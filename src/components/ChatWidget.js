@@ -64,9 +64,12 @@ export default function ChatWidget({ userEmail, isGuest, inlineTrigger = false, 
       const msg = error.message || '';
       if (msg.includes('index') && msg.includes('https://')) {
         const url = msg.match(/https:\/\/[^\s]+/)?.[0];
-        setChatError(url ? `Need index: Create it at ${url}` : 'Database index required. Check console.');
+        setChatError(url ? `Need index: ${url}` : 'Database index required. Check console.');
       } else if (msg.includes('permission') || msg.includes('denied') || msg.includes('PERMISSION_DENIED') || error.code === 'permission-denied') {
-        setChatError('Permission denied — ask dev to deploy Firestore rules.');
+        setChatError(
+          '⚠️ Click to fix permissions: ' +
+          'https://console.firebase.google.com/project/code-defense-a32fd/firestore/rules'
+        );
       } else {
         setChatError('Chat unavailable (' + (error.code || 'unknown') + ')');
       }
@@ -135,9 +138,12 @@ export default function ChatWidget({ userEmail, isGuest, inlineTrigger = false, 
       </View>
 
       {chatError ? (
-        <View style={styles.errorBanner}>
-          <Text style={styles.errorText}>⚠️ {chatError}</Text>
-        </View>
+        <TouchableOpacity style={styles.errorBanner} onPress={() => {
+          const url = chatError.match(/https:\/\/[^\s]+/)?.[0];
+          if (url) window.open(url, '_blank');
+        }}>
+          <Text style={styles.errorText}>{chatError}</Text>
+        </TouchableOpacity>
       ) : null}
       <FlatList
         ref={flatListRef}
