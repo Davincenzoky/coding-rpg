@@ -1205,8 +1205,8 @@ export function generateLevel(techStack, levelNum) {
     const speed = lerp(tier.speedMin, tier.speedMax, tierProgress) * (1 + waveProgress * 0.1);
     const enemyCount = Math.round(lerp(tier.enemiesMin, tier.enemiesMax, tierProgress) * (1 + waveProgress * 0.3));
     const availableTypes = ENEMY_TYPE_POOLS[tier.key] || ['normal'];
-    const enemyTypes = w === waveCount - 1 && availableTypes.length > 1
-      ? [availableTypes[availableTypes.length - 1], ...availableTypes]
+    const enemyTypes = w === waveCount - 1
+      ? [...new Set([...availableTypes, 'boss'])]
       : availableTypes;
     return { enemyHealth: hp, enemySpeed: speed, enemiesPerWave: enemyCount, enemyTypes };
   });
