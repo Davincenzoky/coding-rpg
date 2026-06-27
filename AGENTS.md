@@ -32,12 +32,19 @@ Read the exact versioned docs at https://docs.expo.dev/versions/v56.0.0/ before 
 - ErrorBoundary, custom logo, .nojekyll for GitHub Pages
 
 ### Phase 2 - Core Gameplay Expansion (COMPLETE)
-- **Tower types**: normal, ice (slows enemies), sniper (high damage), mgun (fast fire). Random per spot. Visual color/emoji variants. Projectile colors match type.
+- **Tower types**: normal, ice (sniper, mgun). Random per spot. Visual color/emoji variants. Projectile colors match type.
 - **Enemy varieties**: normal, fast (2x speed/0.5x HP), tanky (0.5x speed/3x HP), boss (6x HP). Pool unlocks per tier. Last wave gets toughest.
 - **Multiple waves**: Beginner=1, Intermediate=2, Advanced=3, Expert=4 waves. HP/speed/count scale per wave within level.
 - **Tower upgrades**: Tap solved tower → see type/level → solve another challenge → upgrade (Lv.1-5). +0.5 damage, +0.3 range per level.
 - **HUD updates**: Shows active enemy count, solved tower count.
 - **Tutorial updated**: Covers tower types, enemy types, multi-wave, upgrades.
+
+### Phase 3 - Challenge Variety Expansion (COMPLETE)
+- **100 unique challenges per tier per tech stack** (5 main + 4 locked) generated from template pools
+- **Progressive difficulty**: Beginner covers syntax/types, Intermediate covers loops/functions/objects, Advanced covers closures/promises/async, Expert covers classes/generators/advanced patterns
+- **Seeded level selection**: Each level uses `levelNum * 7` as offset into shuffled pool so different levels see different questions
+- **Zero duplicates** within a single level (pool of 100, max 8 tower spots)
+- **Randomized choices**: 6 choices per challenge with shuffled order, correct answer position varies
 
 ## Key Files
 - `App.js` - Root with auth-gated navigation, ErrorBoundary, ThemeProvider
