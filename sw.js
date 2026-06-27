@@ -1,4 +1,4 @@
-const CACHE = 'codingrpg-v2';
+const CACHE = 'codingrpg-v1';
 const ASSETS = [
   '/coding-rpg/',
   '/coding-rpg/index.html',
