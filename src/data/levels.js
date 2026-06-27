@@ -1154,8 +1154,8 @@ const TOWER_TYPE_KEYS = ['normal', 'ice', 'sniper', 'mgun'];
 const DIFFICULTY_TIERS = [
   { name: 'BEGINNER', maxLevel: 25, key: 'beginner', hpMin: 1, hpMax: 1, speedMin: 0.8, speedMax: 1.2, enemiesMin: 2, enemiesMax: 3, towerMin: 4, towerMax: 8, waves: 1 },
   { name: 'INTERMEDIATE', maxLevel: 50, key: 'intermediate', hpMin: 1, hpMax: 2, speedMin: 1.0, speedMax: 1.5, enemiesMin: 3, enemiesMax: 5, towerMin: 4, towerMax: 7, waves: 2 },
-  { name: 'ADVANCED', maxLevel: 75, key: 'advanced', hpMin: 4, hpMax: 7, speedMin: 1.2, speedMax: 1.8, enemiesMin: 7, enemiesMax: 10, towerMin: 2, towerMax: 4, waves: 3 },
-  { name: 'EXPERT', maxLevel: 100, key: 'expert', hpMin: 8, hpMax: 15, speedMin: 1.5, speedMax: 2.5, enemiesMin: 8, enemiesMax: 10, towerMin: 2, towerMax: 3, waves: 4 },
+  { name: 'ADVANCED', maxLevel: 75, key: 'advanced', hpMin: 4, hpMax: 7, speedMin: 1.2, speedMax: 1.8, enemiesMin: 7, enemiesMax: 10, towerMin: 3, towerMax: 6, waves: 3 },
+  { name: 'EXPERT', maxLevel: 100, key: 'expert', hpMin: 8, hpMax: 15, speedMin: 1.5, speedMax: 2.5, enemiesMin: 8, enemiesMax: 10, towerMin: 3, towerMax: 6, waves: 4 },
 ];
 
 function getTier(levelNum) {
