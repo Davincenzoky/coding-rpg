@@ -39,7 +39,7 @@ export function createInitialState(level, initialLives = 5) {
     enemies,
     wave: 0,
     score: 0,
-    lives: Math.max(1, initialLives),
+    lives: Math.max(1, initialLives ?? 5),
     gameOver: false,
     victory: false,
     waveInProgress: false,
