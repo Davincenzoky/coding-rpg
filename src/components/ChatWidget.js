@@ -227,14 +227,14 @@ export default function ChatWidget({ userEmail, isGuest, inlineTrigger = false, 
     if (inlineTrigger) {
       return (
         <TouchableOpacity style={styles.inlineTriggerButton} onPress={() => { setIsMinimized(false); setLastSeenCount(messages.length); }}>
-          <Text style={styles.inlineTriggerText}>💬 Chat ({messages.length}){unreadCount > 0 && <Text style={styles.badgeText}> 🔴{unreadCount}</Text>}</Text>
+          <Text style={styles.inlineTriggerText}>💬{unreadCount > 0 && <Text style={styles.badgeText}> 🔴{unreadCount}</Text>}</Text>
         </TouchableOpacity>
       );
     }
     return (
       <TouchableOpacity style={styles.minimizedContainer} onPress={() => { setIsMinimized(false); setLastSeenCount(messages.length); }}>
         <View style={styles.minimizedRow}>
-          <Text style={styles.minimizedText}>💬 {messages.length > 0 ? messages.length : 0} Messages</Text>
+          <Text style={styles.minimizedText}>💬</Text>
           {unreadCount > 0 && (
             <View style={styles.badge}>
               <Text style={styles.badgeLabel}>{unreadCount}</Text>
