@@ -26,7 +26,7 @@ export default function HomeScreen({ onStart, onLeaderboard, onSettings, onAchie
   const playerData = userEmail ? loadPlayerData(userEmail) : null;
   const [charIdx, setCharIdx] = useState(0);
   const [showBtns, setShowBtns] = useState(false);
-  const [chatMinimized, setChatMinimized] = useState(true);
+
 
   useEffect(() => {
     if (visible >= LINES.length) { setShowBtns(true); return; }
@@ -84,11 +84,6 @@ export default function HomeScreen({ onStart, onLeaderboard, onSettings, onAchie
       {(userEmail || isGuest) ? (
         <View style={styles.profileRow}>
           <Text style={styles.userInfo}>👤 {isGuest ? 'Guest' : userEmail}</Text>
-          {chatMinimized && (
-            <TouchableOpacity style={styles.inlineTriggerButton} onPress={() => setChatMinimized(false)}>
-              <Text style={styles.inlineTriggerText}>💬 Chat</Text>
-            </TouchableOpacity>
-          )}
         </View>
       ) : null}
 
@@ -101,14 +96,10 @@ export default function HomeScreen({ onStart, onLeaderboard, onSettings, onAchie
       </View>
     </ScrollView>
 
-    {!chatMinimized && (
-      <ChatWidget
-        userEmail={userEmail}
-        isGuest={isGuest}
-        isMinimized={chatMinimized}
-        onClose={() => setChatMinimized(true)}
-      />
-    )}
+    <ChatWidget
+      userEmail={userEmail}
+      isGuest={isGuest}
+    />
     </View>
   );
 }
