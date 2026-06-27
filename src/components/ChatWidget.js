@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import { colors, spacing, radius, font } from '../theme';
-import { collection, query, onSnapshot, addDoc, serverTimestamp, limit } from 'firebase/firestore';
+import { collection, query, onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp, limit } from 'firebase/firestore';
 import { db } from '../services/firebase';
 import { getProfile } from '../services/leaderboardService';
 
@@ -13,7 +13,10 @@ export default function ChatWidget({ userEmail, isGuest, inlineTrigger = false, 
   const [isMinimized, setIsMinimized] = useState(propIsMinimized !== undefined ? propIsMinimized : true);
   const [username, setUsername] = useState('Guest');
   const [chatError, setChatError] = useState(null);
+  const [replyTo, setReplyTo] = useState(null);
+  const [editingMessage, setEditingMessage] = useState(null);
   const flatListRef = useRef(null);
+  const inputRef = useRef(null);
 
   useEffect(() => {
     if (propIsMinimized !== undefined) {
@@ -41,9 +44,7 @@ export default function ChatWidget({ userEmail, isGuest, inlineTrigger = false, 
       }
     })();
 
-    return () => {
-      isMounted = false;
-    };
+    return () => { isMounted = false; };
   }, [userEmail, isGuest]);
 
   useEffect(() => {
@@ -81,19 +82,70 @@ export default function ChatWidget({ userEmail, isGuest, inlineTrigger = false, 
   const sendMessage = async () => {
     if (!inputText.trim()) return;
 
+    if (editingMessage) {
+      try {
+        const msgRef = doc(db, 'chat_messages', editingMessage.id);
+        await updateDoc(msgRef, {
+          text: inputText.trim(),
+          edited: true,
+          editedAt: serverTimestamp(),
+        });
+        setInputText('');
+        setEditingMessage(null);
+      } catch (error) {
+        console.error('Error updating message:', error);
+      }
+      return;
+    }
+
     try {
-      await addDoc(collection(db, 'chat_messages'), {
+      const msgData = {
         text: inputText.trim(),
         timestamp: serverTimestamp(),
         clientTimestamp: Date.now(),
         user: username,
         userId: currentUserId,
-      });
+      };
+      if (replyTo) {
+        msgData.replyTo = { text: replyTo.text, user: replyTo.user, id: replyTo.id };
+      }
+      await addDoc(collection(db, 'chat_messages'), msgData);
       setInputText('');
+      setReplyTo(null);
     } catch (error) {
       console.error('Error sending message:', error);
     }
   };
+
+  const handleReply = useCallback((msg) => {
+    setReplyTo({ id: msg.id, text: msg.text, user: msg.user });
+    setEditingMessage(null);
+    inputRef.current?.focus();
+  }, []);
+
+  const handleEdit = useCallback((msg) => {
+    setEditingMessage(msg);
+    setInputText(msg.text);
+    setReplyTo(null);
+    inputRef.current?.focus();
+  }, []);
+
+  const handleDelete = useCallback((msg) => {
+    if (typeof window !== 'undefined' && window.confirm) {
+      if (!window.confirm('Delete this message?')) return;
+    }
+    const msgRef = doc(db, 'chat_messages', msg.id);
+    deleteDoc(msgRef).catch(err => console.error('Error deleting message:', err));
+  }, []);
+
+  const cancelEdit = useCallback(() => {
+    setEditingMessage(null);
+    setInputText('');
+  }, []);
+
+  const cancelReply = useCallback(() => {
+    setReplyTo(null);
+  }, []);
 
   const formatTime = (timestamp) => {
     if (!timestamp) return '';
@@ -103,12 +155,37 @@ export default function ChatWidget({ userEmail, isGuest, inlineTrigger = false, 
 
   const renderMessage = ({ item }) => {
     const isCurrentUser = item.userId === currentUserId;
-    
+
     return (
       <View style={[styles.messageContainer, isCurrentUser ? styles.currentUserMessage : styles.otherUserMessage]}>
         {!isCurrentUser && <Text style={styles.messageUser}>{item.user}</Text>}
+        {item.replyTo && (
+          <View style={styles.repliedTo}>
+            <Text style={styles.repliedToUser}>{item.replyTo.user}</Text>
+            <Text style={styles.repliedToText} numberOfLines={1}>{item.replyTo.text}</Text>
+          </View>
+        )}
         <Text style={[styles.messageText, isCurrentUser ? styles.currentUserText : styles.otherUserText]}>{item.text}</Text>
-        <Text style={[styles.messageTime, isCurrentUser ? styles.currentUserTime : styles.otherUserTime]}>{formatTime(item.timestamp)}</Text>
+        <View style={styles.messageFooter}>
+          <Text style={[styles.messageTime, isCurrentUser ? styles.currentUserTime : styles.otherUserTime]}>
+            {formatTime(item.timestamp)}{item.edited ? ' (edited)' : ''}
+          </Text>
+          <View style={styles.actionRow}>
+            <TouchableOpacity onPress={() => handleReply(item)} style={styles.actionBtn}>
+              <Text style={styles.actionText}>↩</Text>
+            </TouchableOpacity>
+            {isCurrentUser && (
+              <>
+                <TouchableOpacity onPress={() => handleEdit(item)} style={styles.actionBtn}>
+                  <Text style={styles.actionText}>✎</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => handleDelete(item)} style={styles.actionBtn}>
+                  <Text style={styles.actionTextDanger}>✕</Text>
+                </TouchableOpacity>
+              </>
+            )}
+          </View>
+        </View>
       </View>
     );
   };
@@ -145,6 +222,7 @@ export default function ChatWidget({ userEmail, isGuest, inlineTrigger = false, 
           <Text style={styles.errorText}>{chatError}</Text>
         </TouchableOpacity>
       ) : null}
+
       <FlatList
         ref={flatListRef}
         data={messages}
@@ -155,15 +233,39 @@ export default function ChatWidget({ userEmail, isGuest, inlineTrigger = false, 
         style={styles.chatList}
       />
 
+      {replyTo && (
+        <View style={styles.replyBar}>
+          <View style={styles.replyBarContent}>
+            <Text style={styles.replyLabel}>Replying to <Text style={styles.replyUser}>{replyTo.user}</Text></Text>
+            <Text style={styles.replyPreview} numberOfLines={1}>{replyTo.text}</Text>
+          </View>
+          <TouchableOpacity onPress={cancelReply} style={styles.replyCancel}>
+            <Text style={styles.replyCancelText}>✕</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {editingMessage && (
+        <View style={styles.replyBar}>
+          <View style={styles.replyBarContent}>
+            <Text style={styles.replyLabel}>Editing message</Text>
+          </View>
+          <TouchableOpacity onPress={cancelEdit} style={styles.replyCancel}>
+            <Text style={styles.replyCancelText}>✕</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.inputContainer}
       >
         <TextInput
+          ref={inputRef}
           style={styles.input}
           value={inputText}
           onChangeText={setInputText}
-          placeholder="Type a message..."
+          placeholder={editingMessage ? 'Edit message...' : 'Type a message...'}
           placeholderTextColor={colors.textMuted}
           multiline
           maxLength={200}
@@ -173,7 +275,7 @@ export default function ChatWidget({ userEmail, isGuest, inlineTrigger = false, 
           onPress={sendMessage}
           disabled={!inputText.trim()}
         >
-          <Text style={styles.sendBtnText}>Send</Text>
+          <Text style={styles.sendBtnText}>{editingMessage ? 'Update' : 'Send'}</Text>
         </TouchableOpacity>
       </KeyboardAvoidingView>
     </View>
@@ -289,6 +391,24 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     borderBottomLeftRadius: 4,
   },
+  repliedTo: {
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    padding: 4,
+    borderRadius: 4,
+    marginBottom: 4,
+    borderLeftWidth: 2,
+    borderLeftColor: colors.primary,
+    paddingLeft: 6,
+  },
+  repliedToUser: {
+    color: colors.primary,
+    fontSize: font.sizeXs,
+    fontWeight: 'bold',
+  },
+  repliedToText: {
+    color: colors.textDim,
+    fontSize: font.sizeXs,
+  },
   messageText: {
     fontSize: font.sizeSm,
     lineHeight: 20,
@@ -305,9 +425,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 4,
   },
+  messageFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 4,
+  },
   messageTime: {
     fontSize: font.sizeXs,
-    marginTop: 4,
   },
   currentUserTime: {
     color: colors.textMuted,
@@ -315,6 +440,55 @@ const styles = StyleSheet.create({
   },
   otherUserTime: {
     color: colors.textDim,
+  },
+  actionRow: {
+    flexDirection: 'row',
+    gap: 2,
+  },
+  actionBtn: {
+    paddingHorizontal: 4,
+    paddingVertical: 2,
+  },
+  actionText: {
+    color: colors.textDim,
+    fontSize: 12,
+  },
+  actionTextDanger: {
+    color: colors.danger,
+    fontSize: 12,
+  },
+  replyBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.bgCard2,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 6,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+  },
+  replyBarContent: {
+    flex: 1,
+  },
+  replyLabel: {
+    color: colors.textDim,
+    fontSize: font.sizeXs,
+  },
+  replyUser: {
+    color: colors.primary,
+    fontWeight: 'bold',
+  },
+  replyPreview: {
+    color: colors.textMuted,
+    fontSize: font.sizeXs,
+  },
+  replyCancel: {
+    padding: 4,
+    marginLeft: spacing.sm,
+  },
+  replyCancelText: {
+    color: colors.danger,
+    fontSize: 14,
+    fontWeight: 'bold',
   },
   inputContainer: {
     flexDirection: 'row',
