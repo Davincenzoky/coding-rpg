@@ -18,7 +18,7 @@ function getWaveConfig(level, waveIndex) {
   return level.waves[waveIndex] || level.waves[level.waves.length - 1];
 }
 
-export function createInitialState(level, initialLives = 10) {
+export function createInitialState(level, initialLives = 5) {
   const enemies = [];
   const towers = level.towerSpots.map((spot, i) => ({
     id: i,
