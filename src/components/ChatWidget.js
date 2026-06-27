@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import { colors, spacing, radius, font } from '../theme';
-import { collection, query, onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp, limit } from 'firebase/firestore';
+import { collection, query, onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp, limit, getDocs, orderBy } from 'firebase/firestore';
 import { db } from '../services/firebase';
 import { getProfile } from '../services/leaderboardService';
 
@@ -16,6 +16,7 @@ export default function ChatWidget({ userEmail, isGuest, inlineTrigger = false, 
   const [replyTo, setReplyTo] = useState(null);
   const [editingMessage, setEditingMessage] = useState(null);
   const [lastSeenCount, setLastSeenCount] = useState(0);
+  const [lbRanks, setLbRanks] = useState({});
   const flatListRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -28,15 +29,6 @@ export default function ChatWidget({ userEmail, isGuest, inlineTrigger = false, 
 
   const unreadCount = Math.max(0, messages.length - lastSeenCount);
   const currentUserId = userEmail || sessionGuestId;
-
-  const topSenders = React.useMemo(() => {
-    const counts = {};
-    messages.forEach(m => { counts[m.userId] = (counts[m.userId] || 0) + 1; });
-    return Object.entries(counts)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 3)
-      .reduce((acc, [id], i) => { acc[id] = i + 1; return acc; }, {});
-  }, [messages]);
 
   useEffect(() => {
     if (isGuest || !userEmail) {
@@ -89,6 +81,21 @@ export default function ChatWidget({ userEmail, isGuest, inlineTrigger = false, 
     });
 
     return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const q = query(collection(db, 'leaderboard'), orderBy('bestScore', 'desc'), limit(3));
+        const snap = await getDocs(q);
+        const ranks = {};
+        snap.docs.forEach((d, i) => {
+          const data = d.data();
+          if (data.email) ranks[data.email] = i + 1;
+        });
+        setLbRanks(ranks);
+      } catch {}
+    })();
   }, []);
 
   const sendMessage = async () => {
@@ -174,7 +181,7 @@ export default function ChatWidget({ userEmail, isGuest, inlineTrigger = false, 
 
   const renderMessage = ({ item }) => {
     const isCurrentUser = item.userId === currentUserId;
-    const rank = topSenders[item.userId];
+    const rank = lbRanks[item.userId];
     const rankEmoji = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '';
 
     return (
