@@ -67,7 +67,7 @@ export default function GameScreen({ techStack, level, onBack, levelNum, maxLeve
   }
 
   useEffect(() => {
-    if (state.gameOver || state.victory) return;
+    if (showTutorial || state.gameOver || state.victory) return;
     if (!state.waveInProgress && state.wave < state.level.waves.length && !showChallenge) {
       const nextWave = state.wave + 1;
       setWaveCountdown(nextWave);
@@ -118,7 +118,7 @@ export default function GameScreen({ techStack, level, onBack, levelNum, maxLeve
         clearInterval(ticker);
       };
     }
-  }, [state.waveInProgress, state.wave, state.gameOver, state.victory, showChallenge]);
+  }, [state.waveInProgress, state.wave, state.gameOver, state.victory, showChallenge, showTutorial]);
 
   useEffect(() => {
     if (!state.waveInProgress || state.gameOver || state.victory) return;
