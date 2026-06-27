@@ -857,6 +857,274 @@ function generateLockedStackPool(id, tierKey) {
   return pool;
 }
 
+function generateHint(challenge) {
+  const { title, answer, desc } = challenge;
+
+  const hints = {
+    // JS Beginner
+    "Variable Decl": answer === 'let' ? 'Declares a reassignable block-scoped variable' : answer === 'var' ? 'Declares a function-scoped variable' : 'Declares a block-scoped constant',
+    "String Val": 'Strings are wrapped in quotes — match the syntax shown',
+    "Boolean": 'Represents a true or false value — type it exactly',
+    "Number": 'Enter the numeric value as-is',
+    "Comment": 'Which symbol turns the rest of the line into a comment?',
+    "Math Op": `Think about which operator "${desc.split(' ')[0]}" performs`,
+    "Alert": 'Which built-in function shows a popup dialog in the browser?',
+    "Array Init": 'Fill in the missing number to complete the array',
+    "Concat": 'Which operator joins two strings together?',
+    "typeof": 'The typeof operator returns a string describing the type',
+    "Increment": 'Which operator increases a numeric variable by exactly 1?',
+    "Compare": 'Which comparison operator goes here?',
+    "Template Literal": 'Which character wraps a template literal? (hint: not a quote)',
+    "Null": 'Represents an intentionally absent value',
+    "Undefined": 'A declared variable that has not been assigned a value',
+    "Console Log": 'Which method writes to the browser developer console?',
+    "String Length": 'Which property gives the number of characters in a string?',
+    "Array Index": 'Are arrays zero-indexed or one-indexed? What is the first index?',
+    "Assignment": 'A single equals sign assigns a value to a variable',
+
+    // JS Intermediate
+    "Call Func": 'Type the name of the function to invoke it',
+    "Function Def": 'Which keyword defines a traditional function in JavaScript?',
+    "Return": 'Which keyword sends a value back from a function?',
+    "Parameter": 'What is the parameter name in this function definition?',
+    "If": 'Which keyword starts a conditional block?',
+    "Else": 'Which keyword provides the alternative branch?',
+    "For Loop": 'Which keyword declares the loop variable in a for loop?',
+    "While": 'Which keyword starts a loop that repeats while a condition is true?',
+    "Array Push": 'Which method appends an element to the end of an array?',
+    "Array Pop": 'Which method removes and returns the last element?',
+    "Search": 'Which array method checks for or finds a value?',
+    "Slice": 'Which method returns a shallow copy of a portion of an array?',
+    "Logical Op": 'Which logical operator connects these two conditions?',
+    "Strict Eq": 'Which operator checks equality without type coercion?',
+    "Object Literal": 'What key name is being assigned a value?',
+    "Dot Access": 'Which property is being accessed with dot notation?',
+    "Break": 'Which keyword immediately exits the current loop?',
+    "Continue": 'Which keyword skips to the next loop iteration?',
+    "Switch": 'Which keyword starts a switch-case statement?',
+    "Case": 'Which keyword defines each branch in a switch?',
+    "String Method": 'Which string method changes the casing?',
+    "Math Floor": 'Which Math method rounds a number down to the nearest integer?',
+    "Join": 'Which method combines array elements into a string?',
+
+    // JS Advanced
+    "Arrow": 'Which symbol creates a concise arrow function?',
+    "Ternary": 'Which symbol starts the condition in a ternary expression?',
+    "Spread": 'Which three dots spread elements of an array?',
+    "Rest Param": 'Which syntax collects remaining function arguments into an array?',
+    "Destructure": 'What is the source being destructured?',
+    "Template Lit": 'Which variable is being interpolated?',
+    "Map": 'Which method transforms every element of an array?',
+    "Filter": 'Which method creates a filtered array with matching elements?',
+    "Reduce": 'Which method boils an array down to a single accumulated value?',
+    "Callback": 'What is typically passed as an argument to asynchronous functions?',
+    "SetTimeout": 'Which function schedules code to run after a delay?',
+    "SetInterval": 'Which function repeatedly runs code at an interval?',
+    "Closure": 'Which variable from the outer scope is being referenced?',
+    "IIFE": 'What makes the function execute immediately after definition?',
+    "Bind": 'Which method creates a new function with a bound this value?',
+    "Call": 'Which method invokes a function with a specified this and arguments?',
+    "Apply": 'Which method invokes a function with arguments passed as an array?',
+    "Nullish": 'Which operator returns the right side only when left is null/undefined?',
+    "Optional Chain": 'Which operator safely accesses nested properties without errors?',
+    "Object Assign": 'Which static method copies properties from source to target?',
+    "Keys": 'Which static method returns an array of an object\'s keys?',
+    "Values": 'Which static method returns an array of an object\'s values?',
+    "Entries": 'Which static method returns key-value pairs as arrays?',
+    "Every/Some": 'Which array method tests whether elements pass a condition?',
+    "Find": 'Which method returns the first element that matches a condition?',
+
+    // JS Expert
+    "Promise": 'Which function is called to fulfill a promise?',
+    "Async": 'Which keyword marks a function as asynchronous?',
+    "Await": 'Which keyword pauses execution until a promise settles?',
+    "Then": 'Which method handles a fulfilled promise?',
+    "Catch": 'Which method handles a rejected promise?',
+    "Finally": 'Which method runs after a promise settles regardless of outcome?',
+    "Class": 'Which keyword defines a blueprint for objects?',
+    "Constructor": 'Which special method initializes new class instances?',
+    "Extends": 'Which keyword creates a subclass that inherits from another?',
+    "Super": 'Which keyword references the parent class?',
+    "Static": 'Which keyword defines a method or property on the class itself?',
+    "Getter": 'Which keyword defines a property getter?',
+    "Setter": 'Which keyword defines a property setter?',
+    "Generator": 'Which keyword pauses and resumes a generator function?',
+    "Proxy": 'Which built-in object wraps another object to intercept operations?',
+    "Symbol": 'Which function creates a unique and immutable value?',
+    "Map": 'Which collection holds key-value pairs with any type as keys?',
+    "Set": 'Which collection holds unique values of any type?',
+    "WeakMap": 'Which collection holds key-value pairs with weak object keys?',
+    "JSON Stringify": 'Which method converts a JavaScript object to a JSON string?',
+    "JSON Parse": 'Which method converts a JSON string to a JavaScript object?',
+    "Memoization": 'Think about what function should be called to produce the cached value',
+    "Debounce": 'Which pattern limits how often a function can be called?',
+    "Recursion": 'Which function calls itself to solve a smaller subproblem?',
+    "Try/Catch": 'Which keyword starts the block that attempts risky code?',
+
+    // Python Beginner
+    "Print": 'Which built-in function outputs text to the console?',
+    "Variable": 'Which single operator assigns a value to a variable in Python?',
+    "String": 'Match the string — Python accepts both single and double quotes',
+    "List": 'Fill in the missing element to complete the list',
+    "Input": 'Which function reads a line of input from the user?',
+    "Type": 'Which function returns the type of an object?',
+    "Length": 'Which function returns the number of items in a sequence?',
+    "Arith": 'Which arithmetic operator is this?',
+    "Str Mult": 'Which operator repeats a string multiple times?',
+    "Not": 'Which keyword inverts a boolean value?',
+    "Is": 'Which keyword checks if two variables refer to the same object?',
+    "In": 'Which keyword checks membership in a sequence?',
+    "Range": 'Which function generates an iterable sequence of numbers?',
+    "Float": 'Enter the decimal number as shown',
+    "Help": 'Which built-in function displays documentation?',
+
+    // Python Intermediate
+    "For": 'Which keyword starts a for loop in Python?',
+    "While": 'Which keyword starts a while loop?',
+    "If": 'Which keyword starts a conditional branch?',
+    "Elif": 'Which keyword means "else if" in Python?',
+    "Else": 'Which keyword provides the fallback branch?',
+    "Def": 'Which keyword defines a function in Python?',
+    "Return": 'Which keyword exits a function and sends back a value?',
+    "List Append": 'Which method adds an item to the end of a list?',
+    "List Index": 'What index accesses the very first element?',
+    "Slice": 'Which index ends the slice?',
+    "Dict": 'What key is being assigned in this dictionary?',
+    "Dict Access": 'Which key is being used to access the dictionary value?',
+    "And": 'Which logical operator requires both operands to be true?',
+    "Or": 'Which logical operator requires at least one operand to be true?',
+    "Str Format": 'Which variable is being inserted into the f-string?',
+    "Upper": 'Which method converts a string to uppercase?',
+    "Split": 'Which method splits a string into a list by a delimiter?',
+    "Join": 'Which method joins a list into a string with a separator?',
+    "Sort": 'Which method sorts a list in ascending order in-place?',
+
+    // Python Advanced
+    "List Comp": 'Which keyword iterates in a list comprehension?',
+    "Lambda": 'Which keyword creates a small anonymous function?',
+    "Args (*args)": 'Which syntax captures extra positional arguments as a tuple?',
+    "Kwargs": 'Which syntax captures extra keyword arguments as a dict?',
+    "Set": 'Which function creates a mutable set from an iterable?',
+    "Tuple": 'What value completes this tuple?',
+    "Enumerate": 'Which built-in returns both index and value while iterating?',
+    "Zip": 'Which built-in pairs elements from multiple iterables together?',
+    "Any/All": 'Which built-in checks a condition across elements?',
+    "F-String": 'Which expression is evaluated inside the f-string?',
+    "Try/Except": 'Which keyword starts the error handling block?',
+    "Raise": 'Which keyword throws an exception intentionally?',
+    "Pass": 'Which keyword is a no-op placeholder?',
+    "Global": 'Which keyword declares a variable as module-level?',
+    "Sorted": 'Which built-in returns a new sorted list?',
+    "Reversed": 'Which built-in returns a reverse iterator over a sequence?',
+
+    // Python Expert
+    "Decorator": 'Which symbol applies a decorator to a function?',
+    "Generator Y": 'Which keyword turns a function into a generator?',
+    "Context Mgr": 'Which keyword sets up a context manager?',
+    "Async Def": 'Which keyword defines a coroutine function?',
+    "Await": 'Which keyword suspends a coroutine until a result is ready?',
+    "Class": 'Which keyword defines a class in Python?',
+    "Init": 'Which dunder method initializes a new instance?',
+    "Self": 'What is the conventional first parameter of instance methods?',
+    "Super": 'Which built-in accesses methods from the parent class?',
+    "Property": 'Which decorator turns a method into a computed attribute?',
+    "Static": 'Which decorator defines a method that doesn\'t receive self/cls?',
+    "Iter": 'Which dunder method makes an object iterable?',
+    "Str": 'Which dunder method defines the string representation?',
+    "Abstract": 'Which module provides ABC and abstractmethod?',
+    "Dataclass": 'Which decorator auto-generates __init__, __repr__, and more?',
+    "Enum": 'Which class from enum is typically imported?',
+    "LRU": 'Which module provides lru_cache for memoization?',
+    "Itertools": 'Which itertools function chains iterables sequentially?',
+    "Partial": 'Which functools tool fixes arguments of a function?',
+    "Type Hint": 'What type annotation matches the expected value?',
+
+    // SQL Beginner
+    "SELECT": 'Which keyword retrieves data from a database table?',
+    "FROM": 'Which keyword specifies the source table for the query?',
+    "WHERE": 'Which operator filters rows in a WHERE clause?',
+    "SELECT Col": 'Which keyword starts a query that selects specific columns?',
+    "Semicolon": 'Which character terminates a SQL statement?',
+
+    // SQL Intermediate
+    "INSERT": 'Which keyword adds new rows to a table?',
+    "UPDATE": 'Which keyword modifies existing data in a table?',
+    "DELETE": 'Which keyword removes rows from a table?',
+    "ORDER BY": 'Which direction sorts from smallest to largest?',
+    "LIMIT": 'How many rows should the query return?',
+
+    // SQL Advanced
+    "JOIN": 'Which keyword combines rows from two tables?',
+    "ON": 'Which keyword specifies how tables are related in a JOIN?',
+    "GROUP BY": 'Which clause groups rows for aggregate functions?',
+    "COUNT": 'Which aggregate function counts rows?',
+    "SUM": 'Which aggregate function adds up numeric values?',
+    "AVG": 'Which aggregate function calculates the average?',
+    "MIN": 'Which aggregate function finds the smallest value?',
+    "MAX": 'Which aggregate function finds the largest value?',
+
+    // SQL Expert
+    "Subquery": 'Which keyword starts the inner/nested query?',
+    "Index": 'Which object speeds up data retrieval?',
+    "View": 'Which object represents a saved query as a virtual table?',
+    "Transaction": 'Which keyword begins a database transaction?',
+    "CTE": 'Which keyword defines a Common Table Expression?',
+
+    // React Beginner
+    "Export": 'Which keyword makes a component available to other files?',
+    "JSX": 'Which HTML element is being returned from the component?',
+    "Import": 'Which keyword brings in code from another module?',
+    "ClassName": 'Which prop applies CSS classes to React elements?',
+    "Fragment": 'Which React component wraps children without adding DOM nodes?',
+
+    // React Intermediate
+    "Props": 'What parameter contains all attributes passed to a component?',
+    "useState": 'Which hook lets a component remember values between renders?',
+    "onClick": 'Which prop handles click events on an element?',
+    "onChange": 'Which prop handles input value changes?',
+    "Conditional": 'Which component or element renders when the condition is true?',
+
+    // React Advanced
+    "useEffect": 'Which hook runs code after render, like data fetching or subscriptions?',
+    "useRef": 'Which hook creates a mutable reference that persists across renders?',
+    "useMemo": 'Which hook caches a computed value to avoid recalculation?',
+    "useCallback": 'Which hook caches a function reference to avoid re-creation?',
+    "Map Render": 'Which array method renders a list of JSX elements?',
+
+    // React Expert
+    "Context": 'Which React method creates a context object?',
+    "useContext": 'Which hook accesses the value of a context?',
+    "Custom Hook": 'What prefix do custom hooks use by convention?',
+    "useReducer": 'Which hook manages state with a reducer function, like Redux?',
+    "memo": 'Which function prevents a component from re-rendering when props haven\'t changed?',
+
+    // HTML/CSS
+    "Tag": 'Type the HTML tag name without angle brackets',
+    "Attr": 'Which attribute sets this property?',
+    "Input Type": 'Which attribute defines the input type?',
+    "Semantic": 'Which semantic HTML tag best fits here?',
+    "Display": 'Which CSS display value goes here?',
+    "Position": 'Which CSS position value places the element?',
+    "Flex Prop": 'What CSS flex value fits this property?',
+    "Pseudo": 'Which pseudo-class targets this element state?',
+    "Animation": 'Which animation name should be used?',
+    "Grid": 'Which grid-template property is this?',
+    "Media Query": 'Which at-rule creates a responsive breakpoint?',
+    "Custom Prop": 'What CSS value is being assigned to the custom property?',
+  };
+
+  const prefix = title.split(' ')[0];
+  return hints[title] || hints[prefix] || `Think about what "${desc || title}" means in this context`;
+}
+
+function attachHints(pool) {
+  return pool.map(c => {
+    if (c.hints && c.hints.length > 0) return c;
+    const hint = generateHint(c);
+    return { ...c, hints: [hint] };
+  });
+}
+
 function repairPool(pool) {
   return pool.map(c => {
     if (c.choices.includes(c.answer)) return c;
@@ -869,15 +1137,15 @@ function repairPool(pool) {
 const CHALLENGE_POOLS = (function buildPools() {
   const tiers = ['beginner', 'intermediate', 'advanced', 'expert'];
   return {
-    js: Object.fromEntries(tiers.map(t => [t, repairPool(generateJSPool(t))])),
-    py: Object.fromEntries(tiers.map(t => [t, repairPool(generatePyPool(t))])),
-    html: Object.fromEntries(tiers.map(t => [t, repairPool(generateHTMLPool(t))])),
-    sql: Object.fromEntries(tiers.map(t => [t, repairPool(generateSQLPool(t))])),
-    react: Object.fromEntries(tiers.map(t => [t, repairPool(generateReactPool(t))])),
-    cpp: Object.fromEntries(tiers.map(t => [t, repairPool(generateLockedStackPool('cpp', t))])),
-    go: Object.fromEntries(tiers.map(t => [t, repairPool(generateLockedStackPool('go', t))])),
-    rust: Object.fromEntries(tiers.map(t => [t, repairPool(generateLockedStackPool('rust', t))])),
-    ts: Object.fromEntries(tiers.map(t => [t, repairPool(generateLockedStackPool('ts', t))])),
+    js: Object.fromEntries(tiers.map(t => [t, attachHints(repairPool(generateJSPool(t)))])),
+    py: Object.fromEntries(tiers.map(t => [t, attachHints(repairPool(generatePyPool(t)))])),
+    html: Object.fromEntries(tiers.map(t => [t, attachHints(repairPool(generateHTMLPool(t)))])),
+    sql: Object.fromEntries(tiers.map(t => [t, attachHints(repairPool(generateSQLPool(t)))])),
+    react: Object.fromEntries(tiers.map(t => [t, attachHints(repairPool(generateReactPool(t)))])),
+    cpp: Object.fromEntries(tiers.map(t => [t, attachHints(repairPool(generateLockedStackPool('cpp', t)))])),
+    go: Object.fromEntries(tiers.map(t => [t, attachHints(repairPool(generateLockedStackPool('go', t)))])),
+    rust: Object.fromEntries(tiers.map(t => [t, attachHints(repairPool(generateLockedStackPool('rust', t)))])),
+    ts: Object.fromEntries(tiers.map(t => [t, attachHints(repairPool(generateLockedStackPool('ts', t)))])),
   };
 })();
 

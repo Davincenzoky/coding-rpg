@@ -15,6 +15,7 @@ function shuffle(arr) {
 export default function CodeChallenge({ challenge, onSolve, onFail, onClose }) {
   const [selected, setSelected] = useState(null);
   const [showHint, setShowHint] = useState(false);
+  const [hintUsed, setHintUsed] = useState(false);
   const [hasError, setHasError] = useState(false);
   const shakeAnim = useRef(new Animated.Value(0)).current;
   const choices = challenge?.choices || ['a', 'b', 'c', 'd', 'e', 'f'];
@@ -34,7 +35,12 @@ export default function CodeChallenge({ challenge, onSolve, onFail, onClose }) {
     setHasError(false);
 
     if (choice === challenge.answer) {
-      setTimeout(() => onSolve(challenge.reward), 300);
+      let reward = challenge.reward;
+      if (hintUsed) {
+        const penalty = 40 + Math.floor(Math.random() * 61);
+        reward = Math.max(0, reward - penalty);
+      }
+      setTimeout(() => onSolve(reward), 300);
     } else {
       shake();
       setHasError(true);
@@ -142,19 +148,20 @@ export default function CodeChallenge({ challenge, onSolve, onFail, onClose }) {
 
           {hasError && (
             <View style={styles.errorBar}>
-              <Text style={styles.errorText}>✖ Wrong block! -1 Life</Text>
+              <Text style={styles.errorText}>✖ Wrong block! Try again</Text>
             </View>
           )}
 
           {showHint && (
             <View style={styles.hintBar}>
               <Text style={styles.hintText}>💡 {challenge.hints?.[0] || 'Think carefully about what the missing code should do.'}</Text>
+              <Text style={styles.hintPenalty}>⚠️ Reward reduced by 40-100 pts for using hint</Text>
             </View>
           )}
 
           <View style={styles.actionRow}>
             {!showHint && (
-              <TouchableOpacity style={styles.hintBtn} onPress={() => setShowHint(true)}>
+              <TouchableOpacity style={styles.hintBtn} onPress={() => { setShowHint(true); setHintUsed(true); }}>
                 <Text style={styles.hintBtnText}>💡 Hint</Text>
               </TouchableOpacity>
             )}
@@ -278,6 +285,7 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: 'rgba(255,217,61,0.3)',
   },
   hintText: { color: colors.warning, fontSize: 13 },
+  hintPenalty: { color: colors.danger, fontSize: 11, marginTop: 4, fontStyle: 'italic' },
   actionRow: { flexDirection: 'row', gap: spacing.sm },
   hintBtn: {
     flex: 1,
