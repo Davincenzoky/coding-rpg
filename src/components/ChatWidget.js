@@ -29,6 +29,15 @@ export default function ChatWidget({ userEmail, isGuest, inlineTrigger = false, 
   const unreadCount = Math.max(0, messages.length - lastSeenCount);
   const currentUserId = userEmail || sessionGuestId;
 
+  const topSenders = React.useMemo(() => {
+    const counts = {};
+    messages.forEach(m => { counts[m.userId] = (counts[m.userId] || 0) + 1; });
+    return Object.entries(counts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3)
+      .reduce((acc, [id], i) => { acc[id] = i + 1; return acc; }, {});
+  }, [messages]);
+
   useEffect(() => {
     if (isGuest || !userEmail) {
       setUsername('Guest');
@@ -165,10 +174,16 @@ export default function ChatWidget({ userEmail, isGuest, inlineTrigger = false, 
 
   const renderMessage = ({ item }) => {
     const isCurrentUser = item.userId === currentUserId;
+    const rank = topSenders[item.userId];
+    const rankEmoji = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '';
 
     return (
       <View style={[styles.messageContainer, isCurrentUser ? styles.currentUserMessage : styles.otherUserMessage]}>
-        {!isCurrentUser && <Text style={styles.messageUser}>{item.user}</Text>}
+        {!isCurrentUser && (
+          <Text style={styles.messageUser}>
+            {rank ? <Text>{rankEmoji} </Text> : null}{item.user}
+          </Text>
+        )}
         {item.replyTo && (
           <View style={styles.repliedTo}>
             <Text style={styles.repliedToUser}>{item.replyTo.user}</Text>
@@ -176,6 +191,7 @@ export default function ChatWidget({ userEmail, isGuest, inlineTrigger = false, 
           </View>
         )}
         <Text style={[styles.messageText, isCurrentUser ? styles.currentUserText : styles.otherUserText]}>{item.text}</Text>
+        {isCurrentUser && rank && <Text style={styles.selfRank}>{rankEmoji}</Text>}
         <View style={styles.messageFooter}>
           <Text style={[styles.messageTime, isCurrentUser ? styles.currentUserTime : styles.otherUserTime]}>
             {formatTime(item.timestamp)}{item.edited ? ' (edited)' : ''}
@@ -492,6 +508,11 @@ const styles = StyleSheet.create({
   actionText: {
     color: colors.textDim,
     fontSize: 12,
+  },
+  selfRank: {
+    fontSize: 12,
+    marginTop: 2,
+    textAlign: 'right',
   },
   actionTextDanger: {
     color: colors.danger,
