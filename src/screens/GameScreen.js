@@ -26,9 +26,9 @@ import { awardXp, loadPlayerData, markStackCompleted } from '../data/playerData'
 
 let tutorialShown = false;
 
-export default function GameScreen({ techStack, level, onBack, levelNum, maxLevel, onNextLevel, userEmail }) {
+export default function GameScreen({ techStack, level, onBack, levelNum, maxLevel, onNextLevel, userEmail, initialLives }) {
   const { playTowerFire, playEnemyHit, playEnemyDestroyed, playWrongAnswer, playVictory, playGameOver, playCountdownTick, playCountdownGo, playTowerPlace, playUpgrade } = useSound();
-  const [state, setState] = useState(() => createInitialState(level));
+  const [state, setState] = useState(() => createInitialState(level, initialLives));
   const [projectiles, setProjectiles] = useState([]);
   const [showChallenge, setShowChallenge] = useState(false);
   const [currentChallenge, setCurrentChallenge] = useState(null);
@@ -352,7 +352,7 @@ export default function GameScreen({ techStack, level, onBack, levelNum, maxLeve
   }
 
   function handleRetry() {
-    setState(createInitialState(level));
+    setState(createInitialState(level, initialLives));
     setProjectiles([]);
     setShowChallenge(false);
     setCurrentChallenge(null);
@@ -361,7 +361,7 @@ export default function GameScreen({ techStack, level, onBack, levelNum, maxLeve
   }
 
   function handleNextLevel() {
-    onNextLevel && onNextLevel();
+    onNextLevel && onNextLevel(state.lives);
   }
 
   useKeyboard([

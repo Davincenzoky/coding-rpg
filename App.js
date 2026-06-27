@@ -39,6 +39,7 @@ function AppContent() {
   const [screen, setScreen] = useState(null);
   const [techStack, setTechStack] = useState(null);
   const [currentLevel, setCurrentLevel] = useState(1);
+  const [remainingLives, setRemainingLives] = useState(null);
 
   useEffect(() => {
     if (loading) return;
@@ -52,6 +53,7 @@ function AppContent() {
   function handleTechSelect(stack) {
     setTechStack(stack);
     setCurrentLevel(1);
+    setRemainingLives(null);
     setScreen('game');
   }
 
@@ -63,9 +65,10 @@ function AppContent() {
     else setScreen('home');
   }
 
-  function handleNextLevel() {
+  function handleNextLevel(lives) {
     const next = currentLevel + 1;
     if (techStack && next <= techStack.levels) {
+      setRemainingLives(lives);
       setCurrentLevel(next);
     } else {
       setScreen('techSelect');
@@ -198,7 +201,8 @@ function AppContent() {
             userEmail={user?.email}
             isGuest={isGuest}
             onBack={handleBack}
-            onNextLevel={currentLevel < techStack.levels ? handleNextLevel : null}
+            onNextLevel={currentLevel < techStack.levels ? (lives) => handleNextLevel(lives) : null}
+            initialLives={remainingLives}
           />
       </View>
     );
