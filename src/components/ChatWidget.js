@@ -12,6 +12,7 @@ export default function ChatWidget({ userEmail, isGuest, inlineTrigger = false, 
   const [inputText, setInputText] = useState('');
   const [isMinimized, setIsMinimized] = useState(propIsMinimized !== undefined ? propIsMinimized : true);
   const [username, setUsername] = useState('Guest');
+  const [chatError, setChatError] = useState(null);
   const flatListRef = useRef(null);
 
   useEffect(() => {
@@ -50,6 +51,7 @@ export default function ChatWidget({ userEmail, isGuest, inlineTrigger = false, 
     const q = query(messagesRef, orderBy('timestamp', 'desc'), limit(100));
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
+      setChatError(null);
       const newMessages = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
@@ -57,7 +59,16 @@ export default function ChatWidget({ userEmail, isGuest, inlineTrigger = false, 
       }));
       setMessages(newMessages.reverse());
     }, (error) => {
-      console.error('Error fetching chat messages:', error);
+      console.error('Chat error:', error);
+      const msg = error.message || '';
+      if (msg.includes('index') && msg.includes('https://')) {
+        const url = msg.match(/https:\/\/[^\s]+/)?.[0];
+        setChatError(url ? `Need index: ${url}` : 'Database index required. Check console.');
+      } else if (msg.includes('permission') || msg.includes('denied')) {
+        setChatError('Permission denied.');
+      } else {
+        setChatError('Chat unavailable.');
+      }
     });
 
     return () => unsubscribe();
@@ -121,6 +132,11 @@ export default function ChatWidget({ userEmail, isGuest, inlineTrigger = false, 
         </TouchableOpacity>
       </View>
 
+      {chatError ? (
+        <View style={styles.errorBanner}>
+          <Text style={styles.errorText}>⚠️ {chatError}</Text>
+        </View>
+      ) : null}
       <FlatList
         ref={flatListRef}
         data={messages}
@@ -229,6 +245,21 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     padding: 4,
+  },
+  errorBanner: {
+    backgroundColor: 'rgba(255,107,107,0.12)',
+    padding: spacing.sm,
+    marginHorizontal: spacing.sm,
+    marginTop: spacing.sm,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: 'rgba(255,107,107,0.3)',
+  },
+  errorText: {
+    color: colors.danger,
+    fontSize: font.sizeXs,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
   chatList: {
     flex: 1,
