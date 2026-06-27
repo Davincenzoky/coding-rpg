@@ -58,7 +58,7 @@ export default function ChatWidget({ userEmail, isGuest, inlineTrigger = false, 
         ...doc.data(),
         timestamp: doc.data().timestamp?.toDate?.() || new Date(doc.data().clientTimestamp || 0),
       }));
-      newMessages.sort((a, b) => b.timestamp - a.timestamp);
+      newMessages.sort((a, b) => a.timestamp - b.timestamp);
       setMessages(newMessages);
     }, (error) => {
       console.error('Chat error:', error.code, error.message);
