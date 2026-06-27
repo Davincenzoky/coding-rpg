@@ -10,9 +10,10 @@ const TYPE_STYLES = {
   mgun:   { bg: '#e65100', border: '#ffd93d', inner: '#ef6c00', arm: '#ffd93d', head: '#ffe082' },
 };
 
-export default function AnimatedTower({ solved, onPress, scale = 1, towerType = 'normal', level = 1 }) {
+export default function AnimatedTower({ solved, onPress, scale = 1, towerType = 'normal', level = 1, canUpgrade = false }) {
   const spinAnim = useRef(new Animated.Value(0)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
+  const upgradePulse = useRef(new Animated.Value(1)).current;
   const tStyle = (TYPE_STYLES[towerType] || TYPE_STYLES.normal);
   const tInfo = TOWER_TYPES[towerType] || TOWER_TYPES.normal;
 
@@ -47,6 +48,26 @@ export default function AnimatedTower({ solved, onPress, scale = 1, towerType = 
     };
   }, [solved]);
 
+  useEffect(() => {
+    if (!canUpgrade) return;
+    const pulse = Animated.loop(
+      Animated.sequence([
+        Animated.timing(upgradePulse, {
+          toValue: 1.3,
+          duration: 500,
+          useNativeDriver: false,
+        }),
+        Animated.timing(upgradePulse, {
+          toValue: 1,
+          duration: 500,
+          useNativeDriver: false,
+        }),
+      ])
+    );
+    pulse.start();
+    return () => pulse.stop();
+  }, [canUpgrade]);
+
   const rotate = spinAnim.interpolate({
     inputRange: [0, 1],
     outputRange: ['0deg', '360deg'],
@@ -63,7 +84,11 @@ export default function AnimatedTower({ solved, onPress, scale = 1, towerType = 
     >
       {solved ? (
         <>
-          <View style={[styles.base, { backgroundColor: tStyle.bg, borderColor: tStyle.border }]}>
+          <View style={[
+            styles.base,
+            { backgroundColor: tStyle.bg, borderColor: tStyle.border },
+            canUpgrade && styles.baseUpgradable,
+          ]}>
             <View style={[styles.baseInner, { backgroundColor: tStyle.inner }]}>
               <Text style={[styles.towerEmoji, { fontSize: 14 * scale }]}>{tInfo.emoji}</Text>
             </View>
@@ -76,6 +101,11 @@ export default function AnimatedTower({ solved, onPress, scale = 1, towerType = 
           <View style={styles.levelBadgeSm}>
             <Text style={[styles.levelBadgeText, { fontSize: 8 * scale }]}>{level}</Text>
           </View>
+          {canUpgrade && (
+            <Animated.View style={[styles.upgradeBadge, { transform: [{ scale: upgradePulse }] }]}>
+              <Text style={styles.upgradeIcon}>⬆️</Text>
+            </Animated.View>
+          )}
         </>
       ) : (
         <>
@@ -175,6 +205,23 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
   towerEmoji: { textAlign: 'center' },
+  baseUpgradable: {
+    borderColor: '#ffd700',
+    boxShadow: '0 0 12px rgba(255,215,0,0.6)',
+    borderWidth: 3,
+  },
+  upgradeBadge: {
+    position: 'absolute',
+    top: -10,
+    right: -10,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: 'rgba(255,215,0,0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  upgradeIcon: { fontSize: 12 },
   levelBadgeSm: {
     position: 'absolute',
     bottom: -2,
