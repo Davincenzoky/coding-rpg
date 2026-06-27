@@ -85,7 +85,9 @@ export function updateGame(state, dt) {
   if (newState.spawnTimer > 1.0 && newState.pathIndex < waveConfig.enemiesPerWave) {
     const isLastEnemy = newState.pathIndex === waveConfig.enemiesPerWave - 1;
     const hasBoss = waveConfig.enemyTypes && waveConfig.enemyTypes.includes('boss');
-    const type = hasBoss && isLastEnemy ? 'boss' : (waveConfig.enemyTypes || ['normal'])[Math.floor(Math.random() * (waveConfig.enemyTypes || ['normal']).length)] || 'normal';
+    const nonBossTypes = (waveConfig.enemyTypes || ['normal']).filter(t => t !== 'boss');
+    const sortedTypes = [...nonBossTypes].sort((a, b) => (ENEMY_TYPES[a]?.size || 1) - (ENEMY_TYPES[b]?.size || 1));
+    const type = hasBoss && isLastEnemy ? 'boss' : sortedTypes[newState.pathIndex % sortedTypes.length] || 'normal';
     const eType = ENEMY_TYPES[type] || ENEMY_TYPES.normal;
     const baseHp = waveConfig.enemyHealth || 1;
     const baseSpeed = (waveConfig.enemySpeed || 1) * 30;
