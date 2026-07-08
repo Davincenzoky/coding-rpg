@@ -98,7 +98,6 @@ export default function GameBoard({
               scale={scale}
               towerType={tower?.type || spot.towerType || 'normal'}
               level={tower?.level || 1}
-              canUpgrade={solved && (tower?.level || 1) < 5}
             />
           </TouchableOpacity>
         );
