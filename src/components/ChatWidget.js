@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, Alert } from 'react-native';
+import { View, Text, Image, TextInput, FlatList, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import { colors, spacing, radius, font } from '../theme';
 import { collection, query, onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp, limit, getDocs, orderBy } from 'firebase/firestore';
 import { db } from '../services/firebase';
@@ -7,7 +7,7 @@ import { getProfile } from '../services/leaderboardService';
 
 const sessionGuestId = 'Guest_' + Math.random().toString(36).substr(2, 9);
 
-export default function ChatWidget({ userEmail, isGuest, inlineTrigger = false, isMinimized: propIsMinimized, onClose }) {
+export default function ChatWidget({ userEmail, photoURL, isGuest, inlineTrigger = false, isMinimized: propIsMinimized, onClose }) {
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState('');
   const [isMinimized, setIsMinimized] = useState(propIsMinimized !== undefined ? propIsMinimized : true);
@@ -126,6 +126,7 @@ export default function ChatWidget({ userEmail, isGuest, inlineTrigger = false, 
         clientTimestamp: Date.now(),
         user: username,
         userId: currentUserId,
+        userPhoto: photoURL || null,
       };
       if (replyTo) {
         msgData.replyTo = { text: replyTo.text, user: replyTo.user, id: replyTo.id };
@@ -187,9 +188,25 @@ export default function ChatWidget({ userEmail, isGuest, inlineTrigger = false, 
     return (
       <View style={[styles.messageContainer, isCurrentUser ? styles.currentUserMessage : styles.otherUserMessage]}>
         {!isCurrentUser && (
-          <Text style={styles.messageUser}>
-            {rank ? <Text>{rankEmoji} </Text> : null}{item.user}
-          </Text>
+          <View style={styles.messageUserRow}>
+            {item.userPhoto ? (
+              <Image source={{ uri: item.userPhoto }} style={styles.avatar} />
+            ) : (
+              <View style={[styles.avatar, styles.avatarPlaceholder]}>
+                <Text style={styles.avatarPlaceholderText}>{item.user?.charAt(0).toUpperCase()}</Text>
+              </View>
+            )}
+            <Text style={styles.messageUser}>
+              {rank ? <Text>{rankEmoji} </Text> : null}{item.user}
+            </Text>
+          </View>
+        )}
+        {isCurrentUser && item.userPhoto && (
+          <View style={styles.currentUserAvatarRow}>
+            {item.userPhoto ? (
+              <Image source={{ uri: item.userPhoto }} style={[styles.avatar, styles.avatarSmall]} />
+            ) : null}
+          </View>
         )}
         {item.replyTo && (
           <View style={styles.repliedTo}>
@@ -482,11 +499,42 @@ const styles = StyleSheet.create({
   otherUserText: {
     color: colors.text,
   },
+  messageUserRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  avatar: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    marginRight: 6,
+  },
+  avatarSmall: {
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    marginLeft: 4,
+  },
+  avatarPlaceholder: {
+    backgroundColor: colors.primaryGlow,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  avatarPlaceholderText: {
+    color: colors.primary,
+    fontSize: 11,
+    fontWeight: 'bold',
+  },
+  currentUserAvatarRow: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginBottom: 2,
+  },
   messageUser: {
     color: colors.primary,
     fontSize: font.sizeXs,
     fontWeight: 'bold',
-    marginBottom: 4,
   },
   messageFooter: {
     flexDirection: 'row',

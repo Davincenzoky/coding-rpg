@@ -19,7 +19,7 @@ function buildLines() {
   ];
 }
 
-export default function HomeScreen({ onStart, onLeaderboard, onSettings, onAchievements, userEmail, isGuest }) {
+export default function HomeScreen({ onStart, onLeaderboard, onSettings, onAchievements, userEmail, photoURL, isGuest }) {
   const LINES = buildLines();
   const [visible, setVisible] = useState(0);
   const [typing, setTyping] = useState('');
@@ -98,6 +98,7 @@ export default function HomeScreen({ onStart, onLeaderboard, onSettings, onAchie
 
     <ChatWidget
       userEmail={userEmail}
+      photoURL={photoURL}
       isGuest={isGuest}
     />
     </View>

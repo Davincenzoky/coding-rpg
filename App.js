@@ -120,6 +120,7 @@ function AppContent() {
             onSettings={() => setScreen('settings')}
             onAchievements={() => setScreen('achievements')}
             userEmail={user?.email}
+            photoURL={user?.photoURL}
             isGuest={isGuest}
           />
         </ResponsiveContainer>
