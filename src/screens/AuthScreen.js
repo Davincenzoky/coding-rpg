@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
-import { signUp, signIn } from '../services/authService';
+import { signUp, signIn, signInWithGoogle } from '../services/authService';
 import { useAuth } from '../context/AuthContext';
 import { isOnline } from '../services/syncService';
 import { colors, spacing, radius, font } from '../theme';
@@ -12,6 +12,7 @@ export default function AuthScreen({ onLogin }) {
   const [isLogin, setIsLogin] = useState(true);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [offline, setOffline] = useState(!isOnline());
 
   useEffect(() => {
@@ -42,6 +43,19 @@ export default function AuthScreen({ onLogin }) {
       setError(msg || 'Authentication failed');
     }
     setLoading(false);
+  }
+
+  async function handleGoogleSignIn() {
+    setGoogleLoading(true); setError('');
+    try {
+      await signInWithGoogle();
+      onLogin && onLogin();
+    } catch (e) {
+      if (e.code !== 'auth/popup-closed-by-user') {
+        setError('Google sign-in failed');
+      }
+    }
+    setGoogleLoading(false);
   }
 
   return (
@@ -97,6 +111,23 @@ export default function AuthScreen({ onLogin }) {
             <Text style={styles.switchLink}>{isLogin ? 'Sign Up' : 'Sign In'}</Text>
           </Text>
         </TouchableOpacity>
+
+        <View style={styles.divider}>
+          <View style={styles.dividerLine} />
+          <Text style={styles.dividerText}>OR</Text>
+          <View style={styles.dividerLine} />
+        </View>
+
+        <TouchableOpacity
+          style={[styles.googleBtn, googleLoading && styles.btnDisabled]}
+          onPress={handleGoogleSignIn}
+          disabled={googleLoading}
+        >
+          <Text style={styles.googleBtnText}>
+            {googleLoading ? 'Please wait...' : 'Sign in with Google'}
+          </Text>
+        </TouchableOpacity>
+
         {offline ? (
           <TouchableOpacity style={styles.offlineBtn} onPress={() => loginAsGuest()}>
             <Text style={styles.offlineBtnText}>📡 Continue Offline</Text>
@@ -140,6 +171,16 @@ const styles = StyleSheet.create({
   switchBtn: { alignItems: 'center', paddingVertical: spacing.xs },
   switchText: { color: colors.textDim, fontSize: font.sizeSm },
   switchLink: { color: colors.accent, fontWeight: 'bold' },
+  divider: { flexDirection: 'row', alignItems: 'center', marginVertical: spacing.md },
+  dividerLine: { flex: 1, height: 1, backgroundColor: colors.border },
+  dividerText: { color: colors.textDim, fontSize: font.sizeSm, marginHorizontal: 12 },
+  googleBtn: {
+    backgroundColor: '#fff', padding: 16, borderRadius: radius.lg,
+    alignItems: 'center', marginBottom: spacing.md,
+    borderWidth: 1, borderColor: colors.border,
+    elevation: 4, boxShadow: `0 2px 8px rgba(0,0,0,0.15)`,
+  },
+  googleBtnText: { color: '#444', fontSize: font.sizeMd, fontWeight: 'bold', letterSpacing: 0.5 },
   offlineBtn: {
     backgroundColor: 'rgba(255,193,7,0.1)', padding: 14, borderRadius: radius.lg,
     alignItems: 'center', borderWidth: 1, borderColor: 'rgba(255,193,7,0.3)',
