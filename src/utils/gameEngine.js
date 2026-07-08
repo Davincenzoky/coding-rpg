@@ -11,14 +11,14 @@ export const ENEMY_TYPES = {
   normal: { label: 'Bug', speedMult: 1, hpMult: 1, bodyColor: '#c62828', size: 1 },
   fast:   { label: 'Fast Bug', speedMult: 2, hpMult: 0.5, bodyColor: '#e65100', size: 0.8 },
   tanky:  { label: 'Tank Bug', speedMult: 0.5, hpMult: 3, bodyColor: '#4a148c', size: 1.4 },
-  boss:   { label: 'BOSS', speedMult: 0.4, hpMult: 6, bodyColor: '#ff6d00', size: 2.5 },
+  boss:   { label: 'BOSS', speedMult: 0.85, hpMult: 12, bodyColor: '#1a237e', size: 1.8 },
 };
 
 function getWaveConfig(level, waveIndex) {
   return level.waves[waveIndex] || level.waves[level.waves.length - 1];
 }
 
-export function createInitialState(level, initialLives = 5) {
+export function createInitialState(level) {
   const enemies = [];
   const towers = level.towerSpots.map((spot, i) => ({
     id: i,
@@ -39,7 +39,7 @@ export function createInitialState(level, initialLives = 5) {
     enemies,
     wave: 0,
     score: 0,
-    lives: Math.max(1, initialLives ?? 5),
+    lives: 3,
     gameOver: false,
     victory: false,
     waveInProgress: false,
@@ -82,12 +82,9 @@ export function updateGame(state, dt) {
   }
 
   newState.spawnTimer += dt;
-  if (newState.spawnTimer > 1.2 && newState.pathIndex < waveConfig.enemiesPerWave) {
-    const isLastEnemy = newState.pathIndex === waveConfig.enemiesPerWave - 1;
-    const hasBoss = waveConfig.enemyTypes && waveConfig.enemyTypes.includes('boss');
-    const nonBossTypes = (waveConfig.enemyTypes || ['normal']).filter(t => t !== 'boss');
-    const sortedTypes = [...nonBossTypes].sort((a, b) => (ENEMY_TYPES[a]?.size || 1) - (ENEMY_TYPES[b]?.size || 1));
-    const type = hasBoss && isLastEnemy ? 'boss' : sortedTypes[newState.pathIndex % sortedTypes.length] || 'normal';
+  if (newState.spawnTimer > 1.0 && newState.pathIndex < waveConfig.enemiesPerWave) {
+    const isLast = newState.pathIndex === waveConfig.enemiesPerWave - 1;
+    const type = isLast ? 'boss' : 'normal';
     const eType = ENEMY_TYPES[type] || ENEMY_TYPES.normal;
     const baseHp = waveConfig.enemyHealth || 1;
     const baseSpeed = (waveConfig.enemySpeed || 1) * 30;

@@ -206,7 +206,7 @@ export default function GameScreen({ techStack, level, onBack, levelNum, maxLeve
         const achData = loadAchievements(userEmail);
         const allTowersSolved = state.towers.every((t) => t.solved);
         const hasUpgrade = state.towers.some((t) => t.level >= 5);
-        const noHitter = state.lives === 10;
+        const noHitter = state.lives === 3;
         const allTypes = ['normal', 'ice', 'sniper', 'mgun'].every((t) => builtTypes.has(t));
         const earned = {
           first_win: totalWinsRef.current,
